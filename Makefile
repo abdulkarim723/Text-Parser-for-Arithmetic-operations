@@ -1,33 +1,30 @@
-CC = gcc
+#SRC_DIR := src
+OBJ_DIR := obj
+#BIN_DIR := bin
 
-CFLAGS = -Wall -g
+EXE := Calculator
+SRC := $(wildcard *.c)
+OBJ := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
+CPPFLAGS := -Iinclude -MMD -MP
+CFLAGS   := -Wall
+LDFLAGS  := -Llib
+LDLIBS   := -lm
 
-# Define source files
-SRCS = main.c calculator.c
+.PHONY: all clean
 
-OBJS =$(SRCS:.c=.o)
+all: $(EXE)
 
-# Define the executable file
-MAIN = Calculator
+$(EXE): $(OBJ)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-.PHONY: depend clean
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-all: $(MAIN)
-	@echo "build..."
-
-$(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS)
-
-#add this two params and correct their values in case of libraries to be added: $(LFLAGS) $(LIBS)
-
-.c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+$(OBJ_DIR):
+	mkdir -p $@
 
 clean:
-	$(RM) *.o *~ $(MAIN)
+	@$(RM) -rv $(EXE) $(OBJ_DIR)
 
-depend: $(SRCS)
-	makedepend $(INCLUDES) $^
-
-# DO NOT DELETE THIS LINE -- make depend nedds it
+-include $(OBJ:.o=.d)
