@@ -18,11 +18,17 @@ void print_func(char** terminal_input){
 
 /*parse the string given from the user as an input*/
 int string_parse(char ** str){
+
 	/*we need to make a copy of the original strings for display reasons*/
 	char* input_str = (char*)malloc(sizeof(char) * STRING_SIZE);
-
 	int str_len = (int)strlen(str[0]); int cnt; char* strstart, *strend, *tmpstr;
-	int ret = check_parentheses(str[0] , str_len); int result = 0;
+	/*check if the given string has parentheses and if they are correctly closed*/
+	int ret = check_parentheses(str[0] , str_len);
+	if(ret == -1){
+		printf("please check your input, you may forgot a parentheses\n");
+		return ret;
+	}
+	int result = 0;
 	char par_str[50];
 	tmpstr = str[0];
 	/*remove the new line*/

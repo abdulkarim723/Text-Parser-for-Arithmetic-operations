@@ -8,11 +8,12 @@ string calculator (addition and substraction)
 
 int main()
 {
+	int ret;
     char ** my_input = (char**)malloc(sizeof(char));
     while(1){
     	/*communicate with the user and read the input from the terminal*/
 		print_func(my_input);
-		/*check if the parentheses are set correctly from the user, otherwise the input is not accepted*/
+		/*check if the input has invalid chars*/
 		if(check_str(my_input[0])){
 			printf("please check your input, it seems you entered an invalid expression\n");
 			break;
@@ -23,7 +24,10 @@ int main()
 			break;
 		}
 		/*parse the input and output the result*/
-		string_parse(my_input);
+		ret = string_parse(my_input);
+		if(ret){
+			return ret;
+		}
     }
     free(my_input);
     return 0;

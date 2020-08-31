@@ -27,4 +27,10 @@ enter 'q' to quit
 10 + (10 - 5) - ( 7 - 3 )  
 10 + (10 - 5) - ( 7 - 3 ) = 11  
 
+> enter a string to be calculated:  
+only addition and substraction is permitted  
+enter 'q' to quit  
+10 + ( 10 + 5  
+please check your input, you may forgot a parentheses  
+
 
