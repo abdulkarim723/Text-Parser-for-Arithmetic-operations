@@ -14,7 +14,7 @@
 #include <ctype.h>
 
 /* maximum string size */
-#define STRING_SIZE     256
+#define STRING_SIZE     1024
 
 /*calculate the given input 'str'*/
 int calculate(char* str, int len);

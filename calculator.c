@@ -9,19 +9,19 @@
 
 /*read the string as an input from the terminal*/
 void print_func(char** terminal_input){
-    terminal_input[0] = malloc(STRING_SIZE * sizeof(char) );
     printf("enter a string to be calculated:\n"
     "only addition and substraction is permitted\n"
     "enter 'q' to quit\n");
-    fgets(terminal_input[0], 1024, stdin);
+    fgets(terminal_input[0], STRING_SIZE, stdin);
 }
 
 /*parse the string given from the user as an input*/
 int string_parse(char ** str){
 
-	/*we need to make a copy of the original strings for display reasons*/
+	/*we need to make a copy of the original string for display reasons*/
 	char* input_str = (char*)malloc(sizeof(char) * STRING_SIZE);
-	int str_len = (int)strlen(str[0]); int cnt; char* strstart, *strend, *tmpstr;
+	int str_len = strlen(str[0]);
+	int cnt; char* strstart, *strend, *tmpstr;
 	/*check if the given string has parentheses and if they are correctly closed*/
 	int ret = check_parentheses(str[0] , str_len);
 	if(ret == -1){
@@ -34,6 +34,7 @@ int string_parse(char ** str){
 	/*remove the new line*/
 	memset(tmpstr + strlen(tmpstr) - 1, '\0', 1);
 
+	/*update the input*/
 	strcpy(input_str, str[0]);
 
 	while(ret){
@@ -56,6 +57,7 @@ int string_parse(char ** str){
 	result = calculate(str[0], strlen(str[0]));
 	/* print the input with its result */
     printf("%s = %i\n\n", input_str, result);
+    free(input_str);
 	return 0;
 }
 
