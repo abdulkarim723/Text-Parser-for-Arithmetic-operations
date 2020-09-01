@@ -31,6 +31,6 @@ void print_func(char** terminal_input);
 /*check if the input has invalid char*/
 int check_str(char* str);
 
-enum calc_status{addition, substraction};
+enum calc_status{addition, substraction, multiplication, division};
 
 #endif /* CALCULATOR_H_ */

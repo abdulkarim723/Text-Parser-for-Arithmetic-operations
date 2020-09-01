@@ -10,7 +10,6 @@
 /*read the string as an input from the terminal*/
 void print_func(char** terminal_input){
     printf("enter a string to be calculated:\n"
-    "only addition and substraction is permitted\n"
     "enter 'q' to quit\n");
     fgets(terminal_input[0], STRING_SIZE, stdin);
 }
@@ -85,6 +84,12 @@ int calculate(char* str, int len){
               case '-':
               calc_stat = substraction;
               break;
+              case '*':
+              calc_stat = multiplication;
+              break;
+              case '/':
+			  calc_stat = division;
+			  break;
           }
           str++;  num_len++;
           continue;
@@ -98,10 +103,16 @@ int calculate(char* str, int len){
        switch(calc_stat){
            case addition:
            result += atoi(tmp);
-	   break;
+	       break;
            case substraction:
            result -= atoi(tmp);
            break;
+           case multiplication:
+           result *= atoi(tmp);
+           break;
+           case division:
+           result /= atoi(tmp);
+		   break;
            default:
            /* we need this default for the first number of the string, otherwise
            the calculation will not be correct*/
@@ -173,7 +184,8 @@ int check_str(char* str){
 	len--;
 	while(len){
 		if(!isdigit(*str)){
-			if(*str != '(' && *str != ')' && *str != '+' && *str != '-' && *str != ' ' && *str != 'q'){
+			if(*str != '(' && *str != ')' && *str != '+' && *str != '-' && *str != '*' && *str != '/'
+					&& *str != ' ' && *str != 'q'){
 				printf("unaccepted input <%c>\n", *str);
 				return 1;
 			}
