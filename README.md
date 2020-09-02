@@ -2,12 +2,13 @@
 
 This program parses arithmetic input **(only addition, substraction, multiplication and divison)** from terminal and calculate the result. 
 
+- Fractional numbers are supported
 - The user types the string in the terminal
 - The program reads the input and  prints the result
 - The user can organise his string in parentheses. But if the number of parentheses is not correct the program refuses the input
 - Spaces between the numbers are allowed
 
-## Workflow
+## Workflow (Linux)
 - Clone the repository:  
 git clone [git@github.com:Abdsaddik/String_Calculator.git](git@github.com:Abdsaddik/String_Calculator.git)
 - Change to the directory ../String_Calculator

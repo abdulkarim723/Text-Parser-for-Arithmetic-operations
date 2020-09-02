@@ -20,7 +20,7 @@
 #define STRING_SIZE 1024
 
 /*calculate the given input 'str'*/
-int calculate(char * str, int len);
+double calculate(char * str, int len);
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
 /*check if the given string has parentheses and if they are correctly closed*/

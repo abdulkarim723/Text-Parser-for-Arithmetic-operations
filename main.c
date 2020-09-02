@@ -21,8 +21,8 @@ int main() {
     print_func(my_input);
     /*check if the input has invalid chars*/
     if (check_str(my_input[0])) {
-      printf("please check your input, it seems you entered an invalid expression\n");
-      break;
+      printf("please check your input, it seems you entered an invalid expression\n\n");
+      continue;
     }
     /*if the user inserted 'q', the program should close*/
     if (!strncmp(my_input[0], "q", 1)) {
@@ -32,7 +32,7 @@ int main() {
     /*parse the input and output the result*/
     ret = string_parse(my_input);
     if (ret) {
-      return ret;
+      continue;
     }
   }
   free(my_input);

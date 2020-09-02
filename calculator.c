@@ -25,10 +25,10 @@ int string_parse(char ** str) {
   /*check if the given string has parentheses and if they are correctly closed*/
   int ret = check_parentheses(str[0], str_len);
   if (ret == -1) {
-    printf("please check your input, you may forgot a parentheses\n");
+    printf("please check your input, you may forgot a parentheses\n\n");
     return ret;
   }
-  int result = 0;
+  double result = 0;
   char par_str[50];
   tmpstr = str[0];
   /*remove the new line*/
@@ -36,7 +36,6 @@ int string_parse(char ** str) {
 
   /*update the input*/
   strcpy(input_str, str[0]);
-
   while (ret) {
     for (cnt = 0; cnt < ret; cnt++) {
       strstart = strstr(tmpstr, "(");
@@ -47,7 +46,7 @@ int string_parse(char ** str) {
     tmpstr = strstart + 1;
     result = calculate(strstart, strend - strstart);
 
-    sprintf(par_str, "%d", result);
+    sprintf(par_str, "%f", result);
     memset(strstart, ' ', strend - strstart + 1);
     memcpy(strstart, par_str, strlen(par_str));
     ret--;
@@ -56,18 +55,18 @@ int string_parse(char ** str) {
   }
   result = calculate(str[0], strlen(str[0]));
   /* print the input with its result */
-  printf("%s = %i\n\n", input_str, result);
+  printf("%s = %f\n\n", input_str, result);
   free(input_str);
   return 0;
 }
 
 /*calculate the given input 'str'*/
-int calculate(char * str, int len) {
+double calculate(char * str, int len) {
   /*num_len is needed to determine the digits length of each number str*/
 
   int num_len = 0;
   /*result: is the last result of the calculation operations*/
-  int result = 0;
+  double result = 0;
   /* allocate memory for tmp variable to be sure that we have a memory for it*/
   char * tmp = (char * ) malloc(STRING_SIZE);
   int ret = 0;
@@ -104,21 +103,21 @@ int calculate(char * str, int len) {
     }
     switch (calc_stat) {
     case addition:
-      result += atoi(tmp);
+      result += strtod(tmp, NULL);
       break;
     case substraction:
-      result -= atoi(tmp);
+      result -= strtod(tmp, NULL);
       break;
     case multiplication:
-      result *= atoi(tmp);
+      result *= strtod(tmp, NULL);
       break;
     case division:
-      result /= atoi(tmp);
+      result /= strtod(tmp, NULL);
       break;
     default:
       /* we need this default for the first number of the string, otherwise
       the calculation will not be correct*/
-      result += atoi(tmp);
+      result += strtod(tmp, NULL);
     }
     /* set the default value for this flag to addition, this line is important to assure right functionality*/
     calc_stat = addition;
@@ -130,7 +129,7 @@ int calculate(char * str, int len) {
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num) {
   int cnt = 0;
-  while (isdigit(str_num[cnt])) {
+  while (isdigit(str_num[cnt]) || str_num[cnt] == '.') {
     cnt++;
   }
   return cnt;
@@ -185,7 +184,7 @@ int check_str(char * str) {
   while (len) {
     if (!isdigit( * str)) {
       if ( * str != '(' && * str != ')' && * str != '+' && * str != '-' && * str != '*' && * str != '/' &&
-        * str != ' ' && * str != 'q') {
+        * str != ' ' && * str != '.' && * str != 'q') {
         printf("unaccepted input <%c>\n", * str);
         return 1;
       }
