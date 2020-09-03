@@ -9,55 +9,69 @@
 
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input) {
-  printf("enter a string to be calculated:\n"
-    "enter 'q' to quit\n");
+  printf("> enter a string to be calculated:\n"
+    "> enter 'q' to quit\n"
+    "> ");
   fgets(terminal_input[0], STRING_SIZE, stdin);
 }
 
 /*parse the string given from the user as an input*/
 int string_parse(char ** str) {
-
-  /*we need to make a copy of the original string for display reasons*/
-  char * input_str = (char * ) malloc(sizeof(char) * STRING_SIZE);
-  int str_len = strlen(str[0]);
   int cnt;
   char * strstart, * strend, * tmpstr;
+  /*check if the input has invalid chars*/
+  if (check_str(str[0])) {
+  	printf("> please check your input, it seems you entered an invalid expression\n\n> ");
+  	return invalid_input_character;
+  }
+
   /*check if the given string has parentheses and if they are correctly closed*/
-  int ret = check_parentheses(str[0], str_len);
-  if (ret == -1) {
-    printf("please check your input, you may forgot a parentheses\n\n");
+  int ret = check_parentheses(str[0]);
+  if (ret == parentheses_error) {
+    printf("> please check your input, you may forgot a parentheses\n\n> ");
     return ret;
   }
   double result = 0;
-  char par_str[50];
+  char par_str[STRING_SIZE];
+  char str_left_side[STRING_SIZE];
+  char str_right_side[STRING_SIZE];
   tmpstr = str[0];
   /*remove the new line*/
   memset(tmpstr + strlen(tmpstr) - 1, '\0', 1);
-
   /*update the input*/
-  strcpy(input_str, str[0]);
   while (ret) {
     for (cnt = 0; cnt < ret; cnt++) {
       strstart = strstr(tmpstr, "(");
       tmpstr += (strstart - tmpstr) + 1;
     }
     strend = strstr(tmpstr, ")");
-
-    tmpstr = strstart + 1;
     result = calculate(strstart, strend - strstart);
-
-    sprintf(par_str, "%f", result);
-    memset(strstart, ' ', strend - strstart + 1);
-    memcpy(strstart, par_str, strlen(par_str));
+#ifdef DEBUG_PRINT
+    printf("result = %f, strstart = %s\n", result, strstart);
+#endif
+    sprintf(par_str, "%.6f", result);
+    strncpy(str_left_side, str[0], strstart - str[0]); str_left_side[strstart - str[0]] = '\0';
+#ifdef DEBUG_PRINT
+    printf("left string = %s\nstrstart = %s\n", str_left_side, strstart);
+#endif
+    strncpy(str_right_side, strend + 1, strlen(strend));
+#ifdef DEBUG_PRINT
+    printf("right string = %s\n", str_right_side);
+#endif
+    strcpy(str[0], str_left_side);
+    strncat(str[0], par_str, strlen(par_str));
+    strncat(str[0], str_right_side, strlen(str_right_side));
+#ifdef DEBUG_PRINT
+    printf("new string = %s\n", str[0]);
+#endif
     ret--;
     check_sign(str[0]);
     tmpstr = str[0];
   }
   result = calculate(str[0], strlen(str[0]));
   /* print the input with its result */
-  printf("%s = %f\n\n", input_str, result);
-  free(input_str);
-  return 0;
+  printf("> %f\n\n", result);
+  return EXIT_SUCCESS;
 }
 
 /*calculate the given input 'str'*/
@@ -122,21 +136,28 @@ double calculate(char * str, int len) {
     /* set the default value for this flag to addition, this line is important to assure right functionality*/
     calc_stat = addition;
   }
-
+  free(tmp);
   return result;
 }
 
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num) {
   int cnt = 0;
-  while (isdigit(str_num[cnt]) || str_num[cnt] == '.') {
+  while (isdigit(str_num[cnt]) || str_num[cnt] == '.' || (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]))) {
+	if(str_num[cnt] == '-' && isdigit(str_num[cnt + 1])){
+	  /*this case is when a minus and there is directly digit after and before it*/
+	  if(isdigit(str_num[cnt-1])){
+		  break;
+	  }
+	}
     cnt++;
   }
   return cnt;
 }
 
 /*check if the given string has parentheses and if they are correctly closed*/
-int check_parentheses(char * str, int str_len) {
+int check_parentheses(char * str) {
+  short str_len = strlen(str);
   int cnt = 0, number_of_parentheses_left = 0, number_of_parentheses_right = 0;
   for (cnt = 0; cnt < str_len; cnt++) {
     if (str[cnt] == '(') {
@@ -146,7 +167,7 @@ int check_parentheses(char * str, int str_len) {
     }
   }
   if (number_of_parentheses_right != number_of_parentheses_left) {
-    return -1;
+    return parentheses_error;
   }
   return number_of_parentheses_right;
 }
@@ -174,7 +195,7 @@ int check_sign(char * str) {
     str++;
     len--;
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 /*check if the input has invalid char*/
@@ -185,12 +206,12 @@ int check_str(char * str) {
     if (!isdigit( * str)) {
       if ( * str != '(' && * str != ')' && * str != '+' && * str != '-' && * str != '*' && * str != '/' &&
         * str != ' ' && * str != '.' && * str != 'q') {
-        printf("unaccepted input <%c>\n", * str);
-        return 1;
+        printf("> unaccepted input <%c>\n", * str);
+        return invalid_input_character;
       }
     }
     len--;
     str++;
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
