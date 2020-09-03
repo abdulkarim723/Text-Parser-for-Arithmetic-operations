@@ -15,16 +15,17 @@ git clone [git@github.com:Abdsaddik/String_Calculator.git](git@github.com:Abdsad
 - make
 - ./Calculator
  
+** For the time of writing this note: I am still working in my free time on this repo and adding features to it. I will try to publish tags for hopefully "nice working commits"**
 ## Output Examples
 > enter a string to be calculated:  
 enter 'q' to quit  
 10 + ( 10  - ( -10 + 15) - (-15 + 5)) - ( 10 + 5 )  
-10 + ( 10  - ( -10 + 15) - (-15 + 5)) - ( 10 + 5 ) = 10  
+10..000000  
   
 > enter a string to be calculated:    
 enter 'q' to quit  
 10 + (10 - 5) - ( 7 - 3 )  
-10 + (10 - 5) - ( 7 - 3 ) = 11  
+11.000000  
 
 > enter a string to be calculated:  
 enter 'q' to quit  
@@ -34,10 +35,10 @@ please check your input, you may forgot a parentheses
 > enter a string to be calculated:  
 enter 'q' to quit  
 100 * 2 / 4 + 5 - 10  
-100 * 2 / 4 + 5 - 10 = 45  
+45.000000  
 
 > enter a string to be calculated:  
 enter 'q' to quit  
 10 * (100/4) - ( 10 + 5)  
-10 * (100/4) - ( 10 + 5) = 235  
+235.000000  
 

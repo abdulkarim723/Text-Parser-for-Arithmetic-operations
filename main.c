@@ -12,21 +12,17 @@ int main() {
   char ** my_input = (char ** ) malloc(sizeof(char));
   my_input[0] = (char * ) malloc(sizeof(char) * STRING_SIZE);
   if (!my_input[0] || !my_input) {
-    printf("memory allocation failed\n"
-      "exit the program\n");
+    printf("> memory allocation failed\n"
+      "> exit the program\n");
     return -1;
   }
   while (1) {
     /*communicate with the user and read the input from the terminal*/
     print_func(my_input);
-    /*check if the input has invalid chars*/
-    if (check_str(my_input[0])) {
-      printf("please check your input, it seems you entered an invalid expression\n\n");
-      continue;
-    }
+
     /*if the user inserted 'q', the program should close*/
     if (!strncmp(my_input[0], "q", 1)) {
-      printf("quit the program\n");
+      printf("> quit the program\n");
       break;
     }
     /*parse the input and output the result*/
@@ -36,5 +32,5 @@ int main() {
     }
   }
   free(my_input);
-  return 0;
+  return EXIT_SUCCESS;
 }
