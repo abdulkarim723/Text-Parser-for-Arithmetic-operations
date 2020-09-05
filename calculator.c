@@ -84,7 +84,6 @@ double calculate(char * str, int len) {
   /* allocate memory for tmp variable to be sure that we have a memory for it*/
   char * tmp = (char * ) malloc(STRING_SIZE);
   int ret = 0;
-  //printf("str = %s, len = %d\n", str, len);
   enum calc_status calc_stat;
   while (num_len < len) {
     /*ret value will be 0 for all none digit characters*/
@@ -143,13 +142,8 @@ double calculate(char * str, int len) {
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num) {
   int cnt = 0;
-  while (isdigit(str_num[cnt]) || str_num[cnt] == '.' || (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]))) {
-	if(str_num[cnt] == '-' && isdigit(str_num[cnt + 1])){
-	  /*this case is when a minus and there is directly digit after and before it*/
-	  if(isdigit(str_num[cnt-1])){
-		  break;
-	  }
-	}
+  while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1]))
+		  || (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt-1]))) {
     cnt++;
   }
   return cnt;
