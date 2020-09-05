@@ -21,21 +21,26 @@ int string_parse(char ** str) {
   char * strstart, * strend, * tmpstr;
   /*check if the input has invalid chars*/
   if (check_str(str[0])) {
-  	printf("> please check your input, it seems you entered an invalid expression\n\n> ");
-  	return invalid_input_character;
+    printf("> please check your input, it seems you entered an invalid expression\n\n> ");
+    return invalid_input_character;
   }
-
+  int ret = check_digit_sign_sequence(str[0]);
   /*check if the given string has parentheses and if they are correctly closed*/
-  int ret = check_parentheses(str[0]);
+  ret = check_parentheses(str[0]);
+  if (ret < 0) {
+    return ret;
+  }
   if (ret == parentheses_error) {
     printf("> please check your input, you may forgot a parentheses\n\n> ");
     return ret;
   }
+
   double result = 0;
   char par_str[STRING_SIZE];
   char str_left_side[STRING_SIZE];
   char str_right_side[STRING_SIZE];
   tmpstr = str[0];
+
   /*remove the new line*/
   memset(tmpstr + strlen(tmpstr) - 1, '\0', 1);
   /*update the input*/
@@ -46,24 +51,25 @@ int string_parse(char ** str) {
     }
     strend = strstr(tmpstr, ")");
     result = calculate(strstart, strend - strstart);
-#ifdef DEBUG_PRINT
+    #ifdef DEBUG_PRINT
     printf("result = %f, strstart = %s\n", result, strstart);
-#endif
+    #endif
     sprintf(par_str, "%.6f", result);
-    strncpy(str_left_side, str[0], strstart - str[0]); str_left_side[strstart - str[0]] = '\0';
-#ifdef DEBUG_PRINT
+    strncpy(str_left_side, str[0], strstart - str[0]);
+    str_left_side[strstart - str[0]] = '\0';
+    #ifdef DEBUG_PRINT
     printf("left string = %s\nstrstart = %s\n", str_left_side, strstart);
-#endif
+    #endif
     strncpy(str_right_side, strend + 1, strlen(strend));
-#ifdef DEBUG_PRINT
+    #ifdef DEBUG_PRINT
     printf("right string = %s\n", str_right_side);
-#endif
+    #endif
     strcpy(str[0], str_left_side);
     strncat(str[0], par_str, strlen(par_str));
     strncat(str[0], str_right_side, strlen(str_right_side));
-#ifdef DEBUG_PRINT
+    #ifdef DEBUG_PRINT
     printf("new string = %s\n", str[0]);
-#endif
+    #endif
     ret--;
     check_sign(str[0]);
     tmpstr = str[0];
@@ -86,6 +92,11 @@ double calculate(char * str, int len) {
   int ret = 0;
   enum calc_status calc_stat;
   while (num_len < len) {
+    if ( * str == ' ') {
+      str++;
+      num_len++;
+      continue;
+    }
     /*ret value will be 0 for all none digit characters*/
     ret = calculate_numlen(str);
     switch (ret) {
@@ -139,11 +150,22 @@ double calculate(char * str, int len) {
   return result;
 }
 
-/*calculate the substring length for every single number in the main string*/
+//double calculate(char * str, int len) {
+//  char* devision = strchr(str, '/'); char right_num[20]; char left_num[20]; double result[3];
+//  int ret;
+//  if(devision){
+//	ret = calculate_numlen(devision);
+//	strncpy(right_num, devision + 1, ret);
+//	right_num[ret] = '\0';
+//  }
+//}
+
+/*calculate the substring length for every single number in the main string
+ * check the presence of the next sign digit */
 int calculate_numlen(char * str_num) {
   int cnt = 0;
-  while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1]))
-		  || (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt-1]))) {
+  while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1])) ||
+    (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt - 1]))) {
     cnt++;
   }
   return cnt;
@@ -208,4 +230,65 @@ int check_str(char * str) {
     str++;
   }
   return EXIT_SUCCESS;
+}
+
+int check_digit_sign_sequence(char * str) {
+  char * end_str;
+  char * tmp = NULL;
+  char * p;
+  char arith[] = "+-*/";
+  char number_digits[] = "0123456789";
+  int len = strlen(str);
+  p = strpbrk(str, arith);
+  end_str = strpbrk(str, number_digits);
+  /*for sing input '10' return EXIT_SUCCESS*/
+  if (!p) {
+    /*exceed the pointer of the current number*/
+    while (isdigit( * end_str)) {
+      end_str++;
+    }
+    p = strpbrk(end_str, number_digits);
+    if (!p) {
+      return EXIT_SUCCESS;
+    } else {
+      printf("> please check your input, you may forgot an arithmetic sign\n\n");
+      return no_arithmetic_sign;
+    }
+  }
+  /*return an error for such input '+   10 + 10'*/
+  if (p < end_str && p != NULL && !isdigit( * (p + 1)) && !isdigit( * (p + 2))) {
+    printf("> please check your input, you may inserted an extra arithmetic sign \n\n");
+    return extra_arithmetic_sign;
+  }
+  /*such inputs return EXIT_SUCCESS
+   * '+ 10'
+   * '+10'
+   * */
+  else if ((p < end_str && p != NULL && * (p + 1) == ' ' && isdigit( * (p + 2))) || (p < end_str && p != NULL && isdigit( * (p + 1)))) {
+    return EXIT_SUCCESS;
+  }
+  while (len > 0) {
+    if (isdigit( * str)) {
+      p = strpbrk(str, arith);
+      strtod(str, & end_str);
+      if ((p < end_str && p != NULL) || tmp == p) {
+        printf("> please check your input, you may forgot an arithmetic sign\n\n");
+        return no_arithmetic_sign;
+      }
+      tmp = p;
+
+      if (end_str) {
+        len -= (end_str - str);
+        str = end_str;
+        continue;
+      }
+    }
+    len--;
+    str++;
+  }
+  if (p != NULL) {
+    printf("> please check your input, you may inserted an extra number\n\n");
+    return extra_arithmetic_sign;
+  }
+  return 0;
 }

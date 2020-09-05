@@ -35,6 +35,8 @@ int check_sign(char * str);
 void print_func(char ** terminal_input);
 /*check if the input has invalid char*/
 int check_str(char * str);
+/*this function makes check if there are no sign between two numbers*/
+int check_digit_sign_sequence(char* str);
 
 enum calc_status {
   addition,

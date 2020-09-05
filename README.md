@@ -1,6 +1,6 @@
 # String_Calculator
 
-This program parses arithmetic input **(only addition, substraction, multiplication and divison)** from terminal and calculate the result. 
+This program parses arithmetic input **(only addition, substraction, multiplication and divison)** from terminal and calculates the result. 
 
 - Fractional numbers are supported
 - The user types the string in the terminal
@@ -20,7 +20,7 @@ git clone [git@github.com:Abdsaddik/String_Calculator.git](git@github.com:Abdsad
 > enter a string to be calculated:  
 enter 'q' to quit  
 10 + ( 10  - ( -10 + 15) - (-15 + 5)) - ( 10 + 5 )  
-10..000000  
+10.000000  
   
 > enter a string to be calculated:    
 enter 'q' to quit  

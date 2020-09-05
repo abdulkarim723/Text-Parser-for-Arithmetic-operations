@@ -10,7 +10,9 @@
 
 enum error_enum {
 	parentheses_error = -10,
-	invalid_input_character
+	invalid_input_character,
+	no_arithmetic_sign,
+	extra_arithmetic_sign
 };
 
 #endif /* STRING_CALCULATOR_ERROR_HANDLING_H_ */
