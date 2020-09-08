@@ -151,18 +151,32 @@ double calculate(char * str, int len) {
   return result;
 }
 
-//double calculate(char * str, int len) {
-//  char* devision = strchr(str, '/'); char right_num[20]; char left_num[20]; double result[3];
+//double calculate_test(char * str, int len) {
+//   char right_num[20]; char left_num[20];  double right_number, left_number, result;
 //  int ret;
+//  char* tmp;
+//  while(len){
+//  char* devision = strchr(str, '/');
+//  tmp = devision;
 //  if(devision){
 //	ret = calculate_numlen(devision);
 //	strncpy(right_num, devision + 1, ret);
 //	right_num[ret] = '\0';
+//	memset(devision + 1, ret, 0);
+//	ret = calculate_numlen_backward(devision - 1);
+//	strncpy(left_num, devision - 1 - ret, ret);
+//	right_num[ret] = '\0';
+//	memset(devision - 1 - ret, ret, 0);
+//	right_number = strtod(right_num, NULL);
+//	left_number = strtod(left_num, NULL);
+//	result = left_number/right_number;
+//	}
 //  }
+// return result;
 //}
 
-/*calculate the substring length for every single number in the main string
- * check the presence of the next sign digit */
+/*calculate the substring length for every single number in the main string*/
+
 int calculate_numlen(char * str_num) {
   int cnt = 0;
   while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1])) ||
@@ -170,6 +184,16 @@ int calculate_numlen(char * str_num) {
     cnt++;
   }
   return cnt;
+}
+
+/*calculate the substring length for every single number in the main string backwards*/
+int calculate_numlen_backward(char * str_num) {
+  int cnt = 0;
+  while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1])) ||
+    (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt - 1]))) {
+    cnt--;
+  }
+  return abs(cnt);
 }
 
 /*check if the given string has parentheses and if they are correctly closed*/
@@ -250,12 +274,12 @@ int is_arith_sign(char * str) {
   }
 }
 
-/*this function returns error for such input ' 10 10'*/
+/*this function returns error for such input ' 10 10' or '(10) (10)'*/
 int check_digit_sign_sequence(char * str) {
   int len = strlen(str);
   int ret;
   while (len) {
-    if (isdigit( * str)) {
+    if (isdigit( * str) || *str == ')') {
       ret = calculate_numlen(str);
       str += ret;
       len -= ret;
@@ -265,33 +289,14 @@ int check_digit_sign_sequence(char * str) {
           len--;
           continue;
         }
-        /*return error for such input ' 10 10'*/
-        else if (isdigit( * str) || ((*str == '-' || *str == '+') && isdigit( * (str + 1)))) {
+        /*return error for such input ' 10 10' or '(10) 10'*/
+        else if (isdigit( * str) || *str == '('){
           printf("> invalid input, missing an arithmetic sign\n\n");
           return no_arithmetic_sign;
         } else {
           break;
         }
       }
-    }
-    else if(*str == ')'){
-      str++;
-      len--;
-      while(len){
-    	  if ( * str == ' ') {
-			str++;
-			len--;
-			continue;
-		  }
-		  /*return error for such input ' 10 10'*/
-		  else if (* str == '(') {
-			printf("> invalid input, missing an arithmetic sign\n\n");
-			return no_arithmetic_sign;
-		  } else {
-			break;
-		  }
-      }
-
     }
     str++;
     len--;

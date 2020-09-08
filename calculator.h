@@ -39,6 +39,8 @@ int check_digit_sign_sequence(char* str);
 
 int is_arith_sign(char* str);
 
+int calculate_numlen_backward(char * str_num);
+
 enum calc_status {
   addition,
   substraction,
