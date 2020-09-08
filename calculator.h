@@ -12,7 +12,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "error_handling.h"
 
 
 /* maximum string size */
@@ -38,11 +37,22 @@ int check_str(char * str);
 /*this function makes check if there are no sign between two numbers*/
 int check_digit_sign_sequence(char* str);
 
+int is_arith_sign(char* str);
+
 enum calc_status {
   addition,
   substraction,
   multiplication,
   division
+};
+
+
+enum error_enum {
+  parentheses_error = -10,
+  invalid_input_character,
+  no_arithmetic_sign,
+  extra_arithmetic_sign,
+  no_numbers_found
 };
 
 #endif /* CALCULATOR_H_ */

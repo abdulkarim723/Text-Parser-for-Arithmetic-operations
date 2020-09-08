@@ -17,19 +17,19 @@ void print_func(char ** terminal_input) {
 
 /*parse the string given from the user as an input*/
 int string_parse(char ** str) {
-  int cnt;
+  int cnt, ret;
   char * strstart, * strend, * tmpstr;
   /*check if the input has invalid chars*/
   if (check_str(str[0])) {
     printf("> please check your input, it seems you entered an invalid expression\n\n> ");
     return invalid_input_character;
   }
-  int ret = check_digit_sign_sequence(str[0]);
-  /*check if the given string has parentheses and if they are correctly closed*/
-  ret = check_parentheses(str[0]);
+  ret = check_digit_sign_sequence(str[0]);
   if (ret < 0) {
     return ret;
   }
+  /*check if the given string has parentheses and if they are correctly closed*/
+  ret = check_parentheses(str[0]);
   if (ret == parentheses_error) {
     printf("> please check your input, you may forgot a parentheses\n\n> ");
     return ret;
@@ -74,6 +74,7 @@ int string_parse(char ** str) {
     check_sign(str[0]);
     tmpstr = str[0];
   }
+  check_sign(str[0]);
   result = calculate(str[0], strlen(str[0]));
   /* print the input with its result */
   printf("> %f\n\n", result);
@@ -144,7 +145,7 @@ double calculate(char * str, int len) {
       result += strtod(tmp, NULL);
     }
     /* set the default value for this flag to addition, this line is important to assure right functionality*/
-    calc_stat = addition;
+    //calc_stat = addition;
   }
   free(tmp);
   return result;
@@ -188,7 +189,8 @@ int check_parentheses(char * str) {
   return number_of_parentheses_right;
 }
 
-/*this function checks signs correctness of the string*/
+/*this function checks signs correctness of the string
+ * is function is implemented after removing parentheses*/
 int check_sign(char * str) {
   int len = strlen(str);
   char * tmp;
@@ -204,8 +206,15 @@ int check_sign(char * str) {
           * str = ' ';
           * tmp = '+';
           break;
-        } else
+        } else if ( * str == '+') {
+          * str = ' ';
+          * tmp = '-';
           break;
+        } else {
+          /*in case *str is a digit or '*' or '/'*/
+          break;
+        }
+
       }
     }
     str++;
@@ -221,7 +230,8 @@ int check_str(char * str) {
   while (len) {
     if (!isdigit( * str)) {
       if ( * str != '(' && * str != ')' && * str != '+' && * str != '-' && * str != '*' && * str != '/' &&
-        * str != ' ' && * str != '.' && * str != 'q') {
+        *
+        str != ' ' && * str != '.' && * str != 'q') {
         printf("> unaccepted input <%c>\n", * str);
         return invalid_input_character;
       }
@@ -232,63 +242,59 @@ int check_str(char * str) {
   return EXIT_SUCCESS;
 }
 
-int check_digit_sign_sequence(char * str) {
-  char * end_str;
-  char * tmp = NULL;
-  char * p;
-  char arith[] = "+-*/";
-  char number_digits[] = "0123456789";
-  int len = strlen(str);
-  p = strpbrk(str, arith);
-  end_str = strpbrk(str, number_digits);
-  /*for sing input '10' return EXIT_SUCCESS*/
-  if (!p) {
-    /*exceed the pointer of the current number*/
-    while (isdigit( * end_str)) {
-      end_str++;
-    }
-    p = strpbrk(end_str, number_digits);
-    if (!p) {
-      return EXIT_SUCCESS;
-    } else {
-      printf("> please check your input, you may forgot an arithmetic sign\n\n");
-      return no_arithmetic_sign;
-    }
+int is_arith_sign(char * str) {
+  if ( * str == '+' || * str == '-' || * str == '/' || * str == '*') {
+    return 1;
+  } else {
+    return 0;
   }
-  /*return an error for such input '+   10 + 10'*/
-  if (p < end_str && p != NULL && !isdigit( * (p + 1)) && !isdigit( * (p + 2))) {
-    printf("> please check your input, you may inserted an extra arithmetic sign \n\n");
-    return extra_arithmetic_sign;
-  }
-  /*such inputs return EXIT_SUCCESS
-   * '+ 10'
-   * '+10'
-   * */
-  else if ((p < end_str && p != NULL && * (p + 1) == ' ' && isdigit( * (p + 2))) || (p < end_str && p != NULL && isdigit( * (p + 1)))) {
-    return EXIT_SUCCESS;
-  }
-  while (len > 0) {
-    if (isdigit( * str)) {
-      p = strpbrk(str, arith);
-      strtod(str, & end_str);
-      if ((p < end_str && p != NULL) || tmp == p) {
-        printf("> please check your input, you may forgot an arithmetic sign\n\n");
-        return no_arithmetic_sign;
-      }
-      tmp = p;
+}
 
-      if (end_str) {
-        len -= (end_str - str);
-        str = end_str;
-        continue;
+/*this function returns error for such input ' 10 10'*/
+int check_digit_sign_sequence(char * str) {
+  int len = strlen(str);
+  int ret;
+  while (len) {
+    if (isdigit( * str)) {
+      ret = calculate_numlen(str);
+      str += ret;
+      len -= ret;
+      while (len) {
+        if ( * str == ' ') {
+          str++;
+          len--;
+          continue;
+        }
+        /*return error for such input ' 10 10'*/
+        else if (isdigit( * str) || ((*str == '-' || *str == '+') && isdigit( * (str + 1)))) {
+          printf("> invalid input, missing an arithmetic sign\n\n");
+          return no_arithmetic_sign;
+        } else {
+          break;
+        }
       }
     }
-    len--;
+    else if(*str == ')'){
+      str++;
+      len--;
+      while(len){
+    	  if ( * str == ' ') {
+			str++;
+			len--;
+			continue;
+		  }
+		  /*return error for such input ' 10 10'*/
+		  else if (* str == '(') {
+			printf("> invalid input, missing an arithmetic sign\n\n");
+			return no_arithmetic_sign;
+		  } else {
+			break;
+		  }
+      }
+
+    }
     str++;
-  }
-  if (p != NULL) {
-    printf("> please check your input, you may inserted an extra number\n\n");
-    return extra_arithmetic_sign;
+    len--;
   }
   return 0;
 }
