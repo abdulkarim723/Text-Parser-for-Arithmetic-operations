@@ -30,7 +30,7 @@ enter 'q' to quit
 > enter a string to be calculated:  
 enter 'q' to quit  
 10 + ( 10 + 5  
-please check your input, you may forgot a parentheses  
+please check your input, you may forgot a parenthesis  
 
 > enter a string to be calculated:  
 enter 'q' to quit  
