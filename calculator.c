@@ -51,25 +51,13 @@ int string_parse(char ** str) {
     }
     strend = strstr(tmpstr, ")");
     result = calculate(strstart, strend - strstart);
-    #ifdef DEBUG_PRINT
-    printf("result = %f, strstart = %s\n", result, strstart);
-    #endif
     sprintf(par_str, "%.6f", result);
     strncpy(str_left_side, str[0], strstart - str[0]);
     str_left_side[strstart - str[0]] = '\0';
-    #ifdef DEBUG_PRINT
-    printf("left string = %s\nstrstart = %s\n", str_left_side, strstart);
-    #endif
     strncpy(str_right_side, strend + 1, strlen(strend));
-    #ifdef DEBUG_PRINT
-    printf("right string = %s\n", str_right_side);
-    #endif
     strcpy(str[0], str_left_side);
     strncat(str[0], par_str, strlen(par_str));
     strncat(str[0], str_right_side, strlen(str_right_side));
-    #ifdef DEBUG_PRINT
-    printf("new string = %s\n", str[0]);
-    #endif
     ret--;
     check_sign(str[0]);
     tmpstr = str[0];
@@ -83,13 +71,14 @@ int string_parse(char ** str) {
 
 /*calculate the given input 'str'*/
 double calculate(char * str, int len) {
+  /*do devision and multiplication operations*/
+  calculate_dev_mul(str, len);
   /*num_len is needed to determine the digits length of each number str*/
-
   int num_len = 0;
   /*result: is the last result of the calculation operations*/
   double result = 0;
   /* allocate memory for tmp variable to be sure that we have a memory for it*/
-  char * tmp = (char * ) malloc(STRING_SIZE);
+  char * tmp = (char * ) malloc(20);
   int ret = 0;
   enum calc_status calc_stat;
   while (num_len < len) {
@@ -109,12 +98,6 @@ double calculate(char * str, int len) {
       case '-':
         calc_stat = substraction;
         break;
-      case '*':
-        calc_stat = multiplication;
-        break;
-      case '/':
-        calc_stat = division;
-        break;
       }
       str++;
       num_len++;
@@ -133,12 +116,6 @@ double calculate(char * str, int len) {
     case substraction:
       result -= strtod(tmp, NULL);
       break;
-    case multiplication:
-      result *= strtod(tmp, NULL);
-      break;
-    case division:
-      result /= strtod(tmp, NULL);
-      break;
     default:
       /* we need this default for the first number of the string, otherwise
       the calculation will not be correct*/
@@ -151,29 +128,63 @@ double calculate(char * str, int len) {
   return result;
 }
 
-//double calculate_test(char * str, int len) {
-//   char right_num[20]; char left_num[20];  double right_number, left_number, result;
-//  int ret;
-//  char* tmp;
-//  while(len){
-//  char* devision = strchr(str, '/');
-//  tmp = devision;
-//  if(devision){
-//	ret = calculate_numlen(devision);
-//	strncpy(right_num, devision + 1, ret);
-//	right_num[ret] = '\0';
-//	memset(devision + 1, ret, 0);
-//	ret = calculate_numlen_backward(devision - 1);
-//	strncpy(left_num, devision - 1 - ret, ret);
-//	right_num[ret] = '\0';
-//	memset(devision - 1 - ret, ret, 0);
-//	right_number = strtod(right_num, NULL);
-//	left_number = strtod(left_num, NULL);
-//	result = left_number/right_number;
-//	}
-//  }
-// return result;
-//}
+/*as in math, the devision had the first priority then comes multiplication*/
+double calculate_dev_mul(char * str, int len) {
+	/*here I made the assumption, that every single double has a maximum size of 20 char digit*/
+   char right_num[20]; char left_num[20]; char result_str[20];  double right_number, left_number, result = 0;
+  int ret;
+  char str_left_side[1024];
+  char str_right_side[1024];
+  char* dev_mult;
+  char* tmp = NULL;
+  while((dev_mult = strchr(str, '/'))!=NULL || (dev_mult = strchr(str, '*'))!=NULL ){
+  tmp = dev_mult;
+	while(*dev_mult == ' ' || *dev_mult == '/' || *dev_mult =='*'  ){
+	    dev_mult++;
+	    len--;
+	    continue;
+	}
+	ret = calculate_numlen(dev_mult);
+	strncpy(right_num, dev_mult, ret );
+	right_num[ret] = '\0';
+	strncpy(str_right_side, dev_mult + ret, strlen(str) - (dev_mult - str) + ret);
+	str_right_side[strlen(str) - (dev_mult - str) + ret ] = '\0';
+    dev_mult = tmp;
+    while(*dev_mult == ' ' || *dev_mult == '/' || *dev_mult == '*'){
+	    dev_mult--;
+	    len--;
+	    continue;
+	}
+	ret = calculate_numlen_backward(dev_mult);
+	strncpy(left_num, dev_mult  - ret + 1, ret);
+	left_num[ret] = '\0';
+	strncpy(str_left_side, str, (tmp - str) - (tmp - dev_mult ));
+	str_left_side[dev_mult - str - ret + 1] = '\0';
+	right_number = strtod(right_num, NULL);
+	left_number = strtod(left_num, NULL);
+    switch(*tmp){
+        case '/':
+        result = left_number/right_number;
+        break;
+        case '*':
+        result = left_number * right_number;
+        break;
+    }
+	sprintf(result_str, "%0.6f", result);
+
+	/*reconstruct the string 'str'*/
+	strcpy(str, str_left_side);
+	strncat(str, result_str, strlen(result_str));
+	strncat(str, str_right_side, strlen(str_right_side));
+	if(!len){
+	    break;
+	}
+	len--;
+  }
+ return result;
+}
+
+
 
 /*calculate the substring length for every single number in the main string*/
 

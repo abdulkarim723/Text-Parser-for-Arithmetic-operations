@@ -39,13 +39,16 @@ int check_digit_sign_sequence(char* str);
 
 int is_arith_sign(char* str);
 
+double calculate_dev_mul(char * str, int len);
+
+double calculate(char * str, int len);
+
 int calculate_numlen_backward(char * str_num);
+
 
 enum calc_status {
   addition,
-  substraction,
-  multiplication,
-  division
+  substraction
 };
 
 
