@@ -32,13 +32,12 @@ int string_parse(char ** str);
 int check_sign(char * str);
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input);
-/*check if the input has invalid char*/
-int check_str(char * str);
+
 /*this function makes check if there are no sign between two numbers*/
 int check_digit_sign_sequence(char* str);
 
 int is_arith_sign(char* str);
-
+/*do devision and multiplication operations*/
 double calculate_dev_mul(char * str, int len);
 
 double calculate(char * str, int len);

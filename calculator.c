@@ -9,6 +9,7 @@
 
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input) {
+  strcpy(terminal_input[0], "");
   printf("> enter a string to be calculated:\n"
     "> enter 'q' to quit\n"
     "> ");
@@ -19,10 +20,9 @@ void print_func(char ** terminal_input) {
 int string_parse(char ** str) {
   int cnt, ret;
   char * strstart, * strend, * tmpstr;
-  /*check if the input has invalid chars*/
-  if (check_str(str[0])) {
-    return invalid_input_character;
-  }
+
+  /*remove the new line*/
+  memset(str[0] + strlen(str[0]) - 1, '\0', 1);
   ret = check_digit_sign_sequence(str[0]);
   if (ret < 0) {
     return ret;
@@ -30,7 +30,7 @@ int string_parse(char ** str) {
   /*check if the given string has parentheses and if they are correctly closed*/
   ret = check_parentheses(str[0]);
   if (ret == parentheses_error) {
-    printf("> please check your input, you may forgot a parentheses\n\n> ");
+    printf("> please check your input, you may forgot a parentheses\n\n");
     return ret;
   }
 
@@ -40,8 +40,7 @@ int string_parse(char ** str) {
   char str_right_side[STRING_SIZE];
   tmpstr = str[0];
 
-  /*remove the new line*/
-  memset(tmpstr + strlen(tmpstr) - 1, '\0', 1);
+
   /*update the input*/
   while (ret) {
     for (cnt = 0; cnt < ret; cnt++) {
@@ -49,11 +48,14 @@ int string_parse(char ** str) {
       tmpstr += (strstart - tmpstr) + 1;
     }
     strend = strstr(tmpstr, ")");
-    result = calculate(strstart, strend - strstart);
-    sprintf(par_str, "%.6f", result);
     strncpy(str_left_side, str[0], strstart - str[0]);
-    str_left_side[strstart - str[0]] = '\0';
-    strncpy(str_right_side, strend + 1, strlen(strend));
+	str_left_side[strstart - str[0]] = '\0';
+	strncpy(str_right_side, strend + 1, strlen(strend + 1));
+	str_right_side[strlen(strend + 1)] = '\0';
+	strstart[strend - strstart] = '\0';
+    result = calculate(strstart + 1, strend - strstart);
+    sprintf(par_str, "%.6f", result);
+
     strcpy(str[0], str_left_side);
     strncat(str[0], par_str, strlen(par_str));
     strncat(str[0], str_right_side, strlen(str_right_side));
@@ -61,7 +63,6 @@ int string_parse(char ** str) {
     check_sign(str[0]);
     tmpstr = str[0];
   }
-  check_sign(str[0]);
   result = calculate(str[0], strlen(str[0]));
   /* print the input with its result */
   printf("> %f\n\n", result);
@@ -71,7 +72,9 @@ int string_parse(char ** str) {
 /*calculate the given input 'str'*/
 double calculate(char * str, int len) {
   /*do devision and multiplication operations*/
-  calculate_dev_mul(str, len);
+  if(strchr(str, '/') || strchr(str, '*')){
+	calculate_dev_mul(str, len);
+  }
   /*num_len is needed to determine the digits length of each number str*/
   int num_len = 0;
   /*result: is the last result of the calculation operations*/
@@ -79,6 +82,8 @@ double calculate(char * str, int len) {
   char tmp[20];
   int ret = 0;
   enum calc_status calc_stat;
+  /*as the string str was reconstructed in the function calculate_dev_mul(), we need to update the value of len*/
+  len = strlen(str);
   while (num_len < len) {
     if ( * str == ' ') {
       str++;
@@ -131,8 +136,8 @@ double calculate_dev_mul(char * str, int len) {
   char result_str[20];
   double right_number, left_number, result = 0;
   int ret;
-  char str_left_side[1024];
-  char str_right_side[1024];
+  char str_left_side[STRING_SIZE];
+  char str_right_side[STRING_SIZE];
   char * dev_mult;
   char * tmp = NULL;
   while ((dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
@@ -205,19 +210,20 @@ int calculate_numlen_backward(char * str_num) {
 
 /*check if the given string has parentheses and if they are correctly closed*/
 int check_parentheses(char * str) {
-  short str_len = strlen(str);
-  int cnt = 0, number_of_parentheses_left = 0, number_of_parentheses_right = 0;
-  for (cnt = 0; cnt < str_len; cnt++) {
-    if (str[cnt] == '(') {
-      number_of_parentheses_left += 1;
-    } else if (str[cnt] == ')') {
-      number_of_parentheses_right += 1;
-    }
+  char* tmp;  char* start_add = str;  char parenthesis[] = "()";
+  int cnt = 0;
+  int number_of_parentheses[2] = {0,0};
+  for(cnt=0; cnt<2;cnt++){
+  while((tmp = strchr(str, parenthesis[cnt])) != NULL){
+	  number_of_parentheses[cnt]++;
+	  str = tmp + 1;
   }
-  if (number_of_parentheses_right != number_of_parentheses_left) {
-    return parentheses_error;
+  str = start_add;
   }
-  return number_of_parentheses_right;
+  if (number_of_parentheses[0] != number_of_parentheses[1]) {
+      return parentheses_error;
+  }
+  return number_of_parentheses[0];
 }
 
 /*this function checks signs correctness of the string
@@ -254,23 +260,6 @@ int check_sign(char * str) {
   return EXIT_SUCCESS;
 }
 
-/*check if the input has invalid char*/
-int check_str(char * str) {
-  int len = strlen(str);
-  len--;
-  while (len) {
-    if (!isdigit( * str) && * str != '(' && * str != ')' && * str != '+' && * str != '-' && * str != '*' && * str != '/' &&
-        * str != ' ' && * str != '.' && * str != 'q') {
-        printf("> unaccepted input <%c>\n\n", * str);
-        return invalid_input_character;
-      }
-
-    len--;
-    str++;
-  }
-  return EXIT_SUCCESS;
-}
-
 int is_arith_sign(char * str) {
   if ( * str == '+' || * str == '-' || * str == '/' || * str == '*') {
     return 1;
@@ -279,12 +268,18 @@ int is_arith_sign(char * str) {
   }
 }
 
-/*this function returns error for such input ' 10 10' or '(10) (10)'*/
+/*this function returns error for such input ' 10 10' or '(10) (10)'
+ * it checks for invalid chars*/
 int check_digit_sign_sequence(char * str) {
   int len = strlen(str);
   int ret;
-  while (len) {
-    if (isdigit( * str) ) {
+  while (len>0) {
+  if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
+		  * str != ' ' && * str != '.' && * str != 'q') {
+	  printf("> invalid input\n\n");
+      return invalid_input_character;
+		}
+  else if (isdigit( * str) ) {
       ret = calculate_numlen(str);
       str += ret;
       len -= ret;

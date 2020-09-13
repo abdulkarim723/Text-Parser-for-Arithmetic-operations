@@ -8,12 +8,11 @@ Parentheses and spaces are allowed
 #include "calculator.h"
 
 int main() {
-  int ret;
   char ** my_input = (char ** ) malloc(sizeof(char));
   my_input[0] = (char * ) malloc(sizeof(char) * STRING_SIZE);
   if (!my_input[0] || !my_input) {
     printf("> memory allocation failed\n"
-      "> exit the program\n");
+           "> exit the program\n");
     return -1;
   }
   while (1) {
@@ -26,10 +25,7 @@ int main() {
       break;
     }
     /*parse the input and output the result*/
-    ret = string_parse(my_input);
-    if (ret) {
-      continue;
-    }
+    string_parse(my_input);
   }
   free(my_input);
   return EXIT_SUCCESS;
