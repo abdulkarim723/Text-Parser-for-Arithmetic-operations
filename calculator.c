@@ -141,9 +141,9 @@ double calculate_dev_mul(char * str, int len) {
   char str_right_side[STRING_SIZE];
   char * dev_mult;
   char * tmp = NULL;
-  while ((dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
+  while ((dev_mult = strchr(str, '%')) != NULL || (dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
     tmp = dev_mult;
-    while ( * dev_mult == ' ' || * dev_mult == '/' || * dev_mult == '*') {
+    while ( * dev_mult == ' ' || * dev_mult == '%' ||* dev_mult == '/' || * dev_mult == '*') {
       dev_mult++;
       len--;
       continue;
@@ -154,7 +154,7 @@ double calculate_dev_mul(char * str, int len) {
     strncpy(str_right_side, dev_mult + ret, strlen(str) - (dev_mult - str) + ret);
     str_right_side[strlen(str) - (dev_mult - str) + ret] = '\0';
     dev_mult = tmp;
-    while ( * dev_mult == ' ' || * dev_mult == '/' || * dev_mult == '*') {
+    while ( * dev_mult == ' ' || * dev_mult == '%' || * dev_mult == '/' || * dev_mult == '*') {
       dev_mult--;
       len--;
       continue;
@@ -167,6 +167,9 @@ double calculate_dev_mul(char * str, int len) {
     right_number = strtod(right_num, NULL);
     left_number = strtod(left_num, NULL);
     switch ( * tmp) {
+    case '%':
+	  result = (long int)left_number % (long int)right_number;
+	  break;
     case '/':
       result = left_number / right_number;
       break;
@@ -262,14 +265,14 @@ int check_sign(char * str) {
 }
 
 int is_arith_sign(char * str) {
-  if ( * str == '+' || * str == '-' || * str == '/' || * str == '*') {
+  if ( * str == '+' || * str == '-' || * str == '/' || * str == '*' || * str == '%') {
     return 1;
   } else {
     return 0;
   }
 }
 
-/*this function returns error for such input ' 10 10' or '(10) (10)'
+/*this function returns error for such input ' 10 10', '(10) (10)', '* 10 + 5' or '10 + 5 *'
  * it checks for invalid chars*/
 int check_digit_sign_sequence(char * str) {
   int len = strlen(str);
