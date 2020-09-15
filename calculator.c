@@ -7,6 +7,7 @@
 
 #include "calculator.h"
 
+
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input) {
   strcpy(terminal_input[0], "");
@@ -273,6 +274,39 @@ int is_arith_sign(char * str) {
 int check_digit_sign_sequence(char * str) {
   int len = strlen(str);
   int ret;
+  char* str_ptr;
+  char* strstart = str;
+  bool str_status = false;
+  char* strend = str + len;
+  if((str_ptr = strpbrk(str,"*/")) != NULL){
+  while(str_ptr>=strstart){
+	  str_ptr--;
+	  if(isdigit(*str_ptr)){
+		  str_status = true;
+		  break;
+	  }
+  }
+  if(!str_status){
+  printf("> extra_arithmetic_sign, input is invalid\n\n");
+  return extra_arithmetic_sign;
+  }
+  }
+
+  str_status = false;
+  if((str_ptr = strrchr(str,'*')) != NULL || (str_ptr = strrchr(str,'/')) != NULL){
+  while(str_ptr<strend){
+	  str_ptr++;
+	  if(isdigit(*str_ptr)){
+		  str_status = true;
+		  break;
+	  }
+
+  }
+  if(!str_status){
+  printf("> extra_arithmetic_sign, input is invalid\n\n");
+  return extra_arithmetic_sign;
+  }
+  }
   while (len>0) {
   if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
 		  * str != ' ' && * str != '.' && * str != 'q') {
