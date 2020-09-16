@@ -17,6 +17,8 @@
 
 /* maximum string size */
 #define STRING_SIZE 1024
+/*currently only one string is allocated*/
+#define Num_Strings   1
 
 // uncomment to print more stuffs regarding string parsing of the input
 //#define DEBUG_PRINT
@@ -28,7 +30,7 @@ int calculate_numlen(char * str_num);
 /*check if the given string has parentheses and if they are correctly closed*/
 int check_parentheses(char * str);
 /*parse the string given from the user as an input*/
-int string_parse(char ** str);
+int string_parse(char * str);
 /*this function checks signs correctness of the string*/
 int check_sign(char * str);
 /*read the string as an input from the terminal*/
@@ -57,7 +59,8 @@ enum error_enum {
   invalid_input_character,
   no_arithmetic_sign,
   extra_arithmetic_sign,
-  no_numbers_found
+  no_numbers_found,
+  memory_allocation_failed
 };
 
 #endif /* CALCULATOR_H_ */

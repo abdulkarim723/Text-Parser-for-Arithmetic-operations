@@ -18,18 +18,18 @@ void print_func(char ** terminal_input) {
 }
 
 /*parse the string given from the user as an input*/
-int string_parse(char ** str) {
+int string_parse(char * str) {
   int cnt, ret;
   char * strstart, * strend, * tmpstr;
 
   /*remove the new line*/
-  memset(str[0] + strlen(str[0]) - 1, '\0', 1);
-  ret = check_digit_sign_sequence(str[0]);
+  memset(str + strlen(str) - 1, '\0', 1);
+  ret = check_digit_sign_sequence(str);
   if (ret < 0) {
     return ret;
   }
   /*check if the given string has parentheses and if they are correctly closed*/
-  ret = check_parentheses(str[0]);
+  ret = check_parentheses(str);
   if (ret == parentheses_error) {
     printf("> please check your input, you may forgot a parentheses\n\n");
     return ret;
@@ -39,7 +39,7 @@ int string_parse(char ** str) {
   char par_str[STRING_SIZE];
   char str_left_side[STRING_SIZE];
   char str_right_side[STRING_SIZE];
-  tmpstr = str[0];
+  tmpstr = str;
 
 
   /*update the input*/
@@ -49,22 +49,22 @@ int string_parse(char ** str) {
       tmpstr += (strstart - tmpstr) + 1;
     }
     strend = strstr(tmpstr, ")");
-    strncpy(str_left_side, str[0], strstart - str[0]);
-	str_left_side[strstart - str[0]] = '\0';
+    strncpy(str_left_side, str, strstart - str);
+	str_left_side[strstart - str] = '\0';
 	strncpy(str_right_side, strend + 1, strlen(strend + 1));
 	str_right_side[strlen(strend + 1)] = '\0';
 	strstart[strend - strstart] = '\0';
     result = calculate(strstart + 1, strend - strstart);
     sprintf(par_str, "%.6f", result);
 
-    strcpy(str[0], str_left_side);
-    strncat(str[0], par_str, strlen(par_str));
-    strncat(str[0], str_right_side, strlen(str_right_side));
+    strcpy(str, str_left_side);
+    strncat(str, par_str, strlen(par_str));
+    strncat(str, str_right_side, strlen(str_right_side));
     ret--;
-    check_sign(str[0]);
-    tmpstr = str[0];
+    check_sign(str);
+    tmpstr = str;
   }
-  result = calculate(str[0], strlen(str[0]));
+  result = calculate(str, strlen(str));
   /* print the input with its result */
   printf("> %f\n\n", result);
   return EXIT_SUCCESS;
