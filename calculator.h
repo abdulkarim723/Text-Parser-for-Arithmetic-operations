@@ -23,8 +23,6 @@
 // uncomment to print more stuffs regarding string parsing of the input
 //#define DEBUG_PRINT
 
-/*calculate the given input 'str'*/
-double calculate(char * str, int len);
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
 /*check if the given string has parentheses and if they are correctly closed*/
@@ -42,7 +40,7 @@ int check_digit_sign_sequence(char* str);
 int is_arith_sign(char* str);
 /*do devision and multiplication operations*/
 double calculate_dev_mul(char * str, int len);
-
+/*calculate the given input 'str'*/
 double calculate(char * str, int len);
 
 int calculate_numlen_backward(char * str_num);
@@ -60,7 +58,8 @@ enum error_enum {
   no_arithmetic_sign,
   extra_arithmetic_sign,
   no_numbers_found,
-  memory_allocation_failed
+  memory_allocation_failed,
+  empty_parentheses_conten
 };
 
 #endif /* CALCULATOR_H_ */

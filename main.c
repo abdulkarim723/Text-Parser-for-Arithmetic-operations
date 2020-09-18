@@ -19,7 +19,7 @@ int main() {
   }
 
   /*allocate memory for several substrings 'Num_Strings'
-   * currently they are only one substring */
+   * currently there are only one substring */
   for(count=0; count<Num_Strings; count++){
   *(my_input + count) = (char *) malloc(sizeof(char) * STRING_SIZE);
   if(! *(my_input + count)){

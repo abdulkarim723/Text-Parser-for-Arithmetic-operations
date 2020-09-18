@@ -54,7 +54,7 @@ int string_parse(char * str) {
 	strncpy(str_right_side, strend + 1, strlen(strend + 1));
 	str_right_side[strlen(strend + 1)] = '\0';
 	strstart[strend - strstart] = '\0';
-    result = calculate(strstart + 1, strend - strstart);
+	result = calculate(strstart + 1, strend - strstart);
     sprintf(par_str, "%.6f", result);
 
     strcpy(str, str_left_side);
@@ -64,6 +64,7 @@ int string_parse(char * str) {
     check_sign(str);
     tmpstr = str;
   }
+  check_sign(str);
   result = calculate(str, strlen(str));
   /* print the input with its result */
   printf("> %f\n\n", result);
@@ -72,6 +73,10 @@ int string_parse(char * str) {
 
 /*calculate the given input 'str'*/
 double calculate(char * str, int len) {
+  if(len == 1){
+	  printf("> it is not allowed to leave empty parentheses content\n\n");
+	  exit(1);
+  }
   /*do devision and multiplication operations*/
   if(strchr(str, '/') || strchr(str, '*')){
 	calculate_dev_mul(str, len);
@@ -195,8 +200,8 @@ double calculate_dev_mul(char * str, int len) {
 
 int calculate_numlen(char * str_num) {
   int cnt = 0;
-  while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1])) ||
-    (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt - 1]))) {
+  while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt + 1])) ||
+    (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt + 1]))) {
     cnt++;
   }
   return cnt;
@@ -206,7 +211,7 @@ int calculate_numlen(char * str_num) {
 int calculate_numlen_backward(char * str_num) {
   int cnt = 0;
   while (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt - 1])) ||
-    (str_num[cnt] == '-' && isdigit(str_num[cnt + 1]) && !isdigit(str_num[cnt - 1]))) {
+    (str_num[cnt] == '-' && isdigit(str_num[cnt + 1])  && !isdigit(str_num[cnt + 1]))) {
     cnt--;
   }
   return abs(cnt);
@@ -266,9 +271,9 @@ int check_sign(char * str) {
 
 int is_arith_sign(char * str) {
   if ( * str == '+' || * str == '-' || * str == '/' || * str == '*' || * str == '%') {
-    return 1;
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 
@@ -277,11 +282,17 @@ int is_arith_sign(char * str) {
 int check_digit_sign_sequence(char * str) {
   int len = strlen(str);
   int ret;
-  char* str_ptr;
+  char* str_ptr, *str_ptr_second, *tmp;
   char* strstart = str;
   bool str_status = false;
   char* strend = str + len;
-  if((str_ptr = strpbrk(str,"*/")) != NULL){
+  char digits[] = "0123456789";
+  if(!strpbrk(str, digits)){
+	 printf("> can not read any number, check your input please\n\n");
+	 return no_numbers_found;
+  }
+  /*if the string starts with one of the following chars "*%/", return an error*/
+  if((str_ptr = strpbrk(str,"*/%")) != NULL){
   while(str_ptr>=strstart){
 	  str_ptr--;
 	  if(isdigit(*str_ptr)){
@@ -294,9 +305,32 @@ int check_digit_sign_sequence(char * str) {
   return extra_arithmetic_sign;
   }
   }
-
+  /********************************************************************************/
+  /* return an error in case of duplicated arithmetic sign except the minus '-'*/
   str_status = false;
-  if((str_ptr = strrchr(str,'*')) != NULL || (str_ptr = strrchr(str,'/')) != NULL){
+  tmp = str;
+  while ((str_ptr = strpbrk(tmp,"*/%+")) != NULL){
+	  tmp = str_ptr + 1;
+	  if((str_ptr_second = strpbrk(tmp,"*/%+")) != NULL){
+		  while(str_ptr_second > tmp){
+			if(isdigit(* tmp) || *tmp == '(' ){
+			  str_status = true;
+			  /*every thing is fine*/
+			  break;
+			  }
+			tmp++;
+		  }
+	  if(!str_status){
+		printf("> extra_arithmetic_sign, input is invalid\n\n");
+		return extra_arithmetic_sign;
+		}
+	  }
+  }
+
+  /*if the string ends with an arithmetic sign, then it returns error */
+  str_status = false;
+  if((str_ptr = strrchr(str,'*')) != NULL || (str_ptr = strrchr(str,'/')) != NULL || (str_ptr = strrchr(str,'%')) != NULL
+		  || (str_ptr = strrchr(str,'+')) != NULL || (str_ptr = strrchr(str,'-')) != NULL){
   while(str_ptr<strend){
 	  str_ptr++;
 	  if(isdigit(*str_ptr)){
@@ -310,6 +344,7 @@ int check_digit_sign_sequence(char * str) {
   return extra_arithmetic_sign;
   }
   }
+
   while (len>0) {
   if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
 		  * str != ' ' && * str != '.' && * str != 'q') {
@@ -331,6 +366,9 @@ int check_digit_sign_sequence(char * str) {
           printf("> invalid input, missing an arithmetic sign\n\n");
           return no_arithmetic_sign;
         } else {
+          /*string index tuning*/
+          str--;
+          len++;
           break;
         }
       }
