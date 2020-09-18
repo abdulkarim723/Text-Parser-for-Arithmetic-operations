@@ -9,16 +9,20 @@
 #define CALCULATOR_H_
 
 #include <stdio.h>
+
 #include <string.h>
+
 #include <stdlib.h>
+
 #include <ctype.h>
+
 #include <stdbool.h>
 
 
 /* maximum string size */
 #define STRING_SIZE 1024
 /*currently only one string is allocated*/
-#define Num_Strings   1
+#define Num_Strings 1
 
 // uncomment to print more stuffs regarding string parsing of the input
 //#define DEBUG_PRINT
@@ -35,9 +39,9 @@ int check_sign(char * str);
 void print_func(char ** terminal_input);
 
 /*this function makes check if there are no sign between two numbers*/
-int check_digit_sign_sequence(char* str);
+int check_digit_sign_sequence(char * str);
 
-int is_arith_sign(char* str);
+int is_arith_sign(char * str);
 /*do devision and multiplication operations*/
 double calculate_dev_mul(char * str, int len);
 /*calculate the given input 'str'*/
@@ -45,21 +49,19 @@ double calculate(char * str, int len);
 
 int calculate_numlen_backward(char * str_num);
 
-
 enum calc_status {
-  addition,
-  substraction
+   addition,
+   substraction
 };
 
-
 enum error_enum {
-  parentheses_error = -10,
-  invalid_input_character,
-  no_arithmetic_sign,
-  extra_arithmetic_sign,
-  no_numbers_found,
-  memory_allocation_failed,
-  empty_parentheses_conten
+   parentheses_error = -10,
+   invalid_input_character,
+   no_arithmetic_sign,
+   extra_arithmetic_sign,
+   no_numbers_found,
+   memory_allocation_failed,
+   empty_parentheses_content
 };
 
 #endif /* CALCULATOR_H_ */
