@@ -49,6 +49,7 @@ double calculate(char * str, int len);
 
 int calculate_numlen_backward(char * str_num);
 
+int str_reconst(char* str, char* start, char* end);
 enum calc_status {
    addition,
    substraction

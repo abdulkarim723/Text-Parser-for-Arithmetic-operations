@@ -19,7 +19,7 @@ void print_func(char ** terminal_input) {
 
 /*parse the string given from the user as an input*/
 int string_parse(char * str) {
-   int cnt, ret;
+   int cnt, ret, parenthesis_num;
    char * strstart, * strend, * tmpstr;
 
    /*remove the new line*/
@@ -29,41 +29,24 @@ int string_parse(char * str) {
       return ret;
    }
    /*check if the given string has parentheses and if they are correctly closed*/
-   ret = check_parentheses(str);
-   if (ret == parentheses_error) {
+   parenthesis_num = check_parentheses(str);
+   if (parenthesis_num == parentheses_error) {
       printf("> please check your input, you may forgot a parentheses\n\n");
-      return ret;
+      return parenthesis_num;
    }
 
    double result = 0;
-   char par_str[STRING_SIZE];
-   char str_left_side[STRING_SIZE];
-   char str_right_side[STRING_SIZE];
    tmpstr = str;
 
    /*update the input*/
-   while (ret) {
-      for (cnt = 0; cnt < ret; cnt++) {
+   while (parenthesis_num) {
+      for (cnt = 0; cnt < parenthesis_num; cnt++) {
          strstart = strstr(tmpstr, "(");
          tmpstr += (strstart - tmpstr) + 1;
       }
       strend = strstr(tmpstr, ")");
-      strncpy(str_left_side, str, strstart - str);
-      str_left_side[strstart - str] = '\0';
-      strncpy(str_right_side, strend + 1, strlen(strend + 1));
-      str_right_side[strlen(strend + 1)] = '\0';
-      strstart[strend - strstart] = '\0';
-      result = calculate(strstart + 1, strend - strstart);
-      if (strend - strstart == 1) {
-         printf("> it is not allowed to leave empty parentheses content\n\n");
-         return empty_parentheses_content;
-      }
-      sprintf(par_str, "%.6f", result);
-
-      strcpy(str, str_left_side);
-      strncat(str, par_str, strlen(par_str));
-      strncat(str, str_right_side, strlen(str_right_side));
-      ret--;
+      str_reconst(str, strstart, strend);
+      parenthesis_num--;
       check_sign(str);
       tmpstr = str;
    }
@@ -76,6 +59,29 @@ int string_parse(char * str) {
    /* print the input with its result */
    printf("> %f\n\n", result);
    return EXIT_SUCCESS;
+}
+/*reconstruct the current string to its new value*/
+int str_reconst(char* str, char* str_start, char* str_end){
+	double result = 0;
+    char par_str[STRING_SIZE];
+    char str_left_side[STRING_SIZE];
+    char str_right_side[STRING_SIZE];
+	strncpy(str_left_side, str, str_start - str);
+    str_left_side[str_start - str] = '\0';
+    strncpy(str_right_side, str_end + 1, strlen(str_end + 1));
+	str_right_side[strlen(str_end + 1)] = '\0';
+	str_start[str_end - str_start] = '\0';
+	result = calculate(str_start + 1, str_end - str_start);
+	  if (str_end - str_start == 1) {
+		 printf("> it is not allowed to leave empty parentheses content\n\n");
+		 return empty_parentheses_content;
+	  }
+	  sprintf(par_str, "%.6f", result);
+
+	  strcpy(str, str_left_side);
+	  strncat(str, par_str, strlen(par_str));
+	  strncat(str, str_right_side, strlen(str_right_side));
+	return 0;
 }
 
 /*calculate the given input 'str'*/
@@ -386,3 +392,9 @@ int check_digit_sign_sequence(char * str) {
    }
    return 0;
 }
+
+
+
+
+
+
