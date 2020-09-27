@@ -24,11 +24,11 @@ int string_parse(char * str) {
    int len = strlen(str) - 1;
    /*remove the new line*/
    memset(str + len, '\0', 1);
-   ret = check_researved_words(str);
+   ret = check_reserved_words(str);
    if (ret < 0) {
       return ret;
    }
-   ret = check_digit_sign_sequence(str, strlen(str));
+   ret = check_errors(str, strlen(str));
    if (ret < 0) {
       return ret;
    }
@@ -36,7 +36,6 @@ int string_parse(char * str) {
    if (parenthesis_number == parentheses_error) {
       return parenthesis_number;
    }
-   printf("num = %d, len = %d\n", parenthesis_number, len);
    if (parenthesis_number > 0) {
       result = calculate_parentthesis_content(str, len, parenthesis_number);
    }
@@ -304,7 +303,7 @@ int is_arith_sign(char * str) {
 
 /*this function returns error for such input ' 10 10', '(10) (10)', '* 10 + 5' or '10 + 5 *'
  * it checks for invalid chars*/
-int check_digit_sign_sequence(char * str, int len) {
+int check_errors(char * str, int len) {
    //   int len = strlen(str);
    int ret;
    char * str_ptr, * str_ptr_second, * tmp;
@@ -404,7 +403,7 @@ int check_digit_sign_sequence(char * str, int len) {
    return 0;
 }
 /*this function is to calculate the content of the reserved key words such as 'abs' and 'sqrt'*/
-int check_researved_words(char * str) {
+int check_reserved_words(char * str) {
    const char researved_words[reserved_strings][10] = {
       "abs(",
       "sqrt("
@@ -434,13 +433,16 @@ int check_researved_words(char * str) {
             if (parenthesis_left == parenthesis_right) {
                /*reset the values of parenthesis_left and parenthesis_right for the next iteration*/
                parenthesis_left = 1, parenthesis_right = 0;
-               int ret = check_digit_sign_sequence(parenthesis_start, parenthesis_end - parenthesis_start);
+               int ret = check_errors(parenthesis_start, parenthesis_end - parenthesis_start);
                if (ret < 0) {
                   return ret;
                }
-               str_reconst(str, parenthesis_start, parenthesis_end);
+               int parenthesis_number = check_parentheses(str);
+               if (parenthesis_number == parentheses_error) {
+                  return parenthesis_number;
+               }
                memset(ptr, ' ', parenthesis_start - ptr);
-               printf("str = %s\n", str);
+               calculate_parentthesis_content(parenthesis_start, parenthesis_end - parenthesis_start + 1, parenthesis_number);
                break;
             }
          }

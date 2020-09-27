@@ -41,7 +41,7 @@ int check_sign(char * str);
 void print_func(char ** terminal_input);
 
 /*this function makes check if there are no sign between two numbers*/
-int check_digit_sign_sequence(char * str, int len);
+int check_errors(char * str, int len);
 
 int is_arith_sign(char * str);
 /*do devision and multiplication operations*/
@@ -55,7 +55,7 @@ double str_reconst(char* str, char* start, char* end);
 
 double calculate_parentthesis_content(char* str_o, int len, int parenthesis_num);
 
-int check_researved_words(char* str);
+int check_reserved_words(char* str);
 enum calc_status {
    addition,
    substraction
