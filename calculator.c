@@ -19,26 +19,42 @@ void print_func(char ** terminal_input) {
 
 /*parse the string given from the user as an input*/
 int string_parse(char * str) {
-   int cnt, ret, parenthesis_num;
-   char * strstart, * strend, * tmpstr;
-
+   int ret;
+   double result;
+   int len = strlen(str) - 1;
    /*remove the new line*/
-   memset(str + strlen(str) - 1, '\0', 1);
-   ret = check_digit_sign_sequence(str);
+   memset(str + len, '\0', 1);
+   ret = check_researved_words(str);
    if (ret < 0) {
       return ret;
    }
-   /*check if the given string has parentheses and if they are correctly closed*/
-   parenthesis_num = check_parentheses(str);
-   if (parenthesis_num == parentheses_error) {
-      printf("> please check your input, you may forgot a parentheses\n\n");
-      return parenthesis_num;
+   ret = check_digit_sign_sequence(str, strlen(str));
+   if (ret < 0) {
+      return ret;
    }
+   int parenthesis_number = check_parentheses(str);
+   if (parenthesis_number == parentheses_error) {
+      return parenthesis_number;
+   }
+   printf("num = %d, len = %d\n", parenthesis_number, len);
+   if (parenthesis_number > 0) {
+      result = calculate_parentthesis_content(str, len, parenthesis_number);
+   }
+   result = calculate(str, strlen(str));
+   /* print the input with its result */
+   printf("> %f\n\n", result);
+   return EXIT_SUCCESS;
+}
 
-   double result = 0;
+double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num) {
+   char str[1024];
+   strncpy(str, str_o, len);
+   str[len] = '\0';
+   char * strstart, * strend, * tmpstr;
+   int cnt;
    tmpstr = str;
-
    /*update the input*/
+
    while (parenthesis_num) {
       for (cnt = 0; cnt < parenthesis_num; cnt++) {
          strstart = strstr(tmpstr, "(");
@@ -51,37 +67,31 @@ int string_parse(char * str) {
       tmpstr = str;
    }
    check_sign(str);
-   result = calculate(str, strlen(str));
-   if (strlen(str) == 1) {
+   strcpy(str_o, str);
+   return 0;
+}
+/*reconstruct the current string to its new value*/
+double str_reconst(char * str, char * str_start, char * str_end) {
+   double result = 0;
+   char par_str[STRING_SIZE];
+   char str_left_side[STRING_SIZE];
+   char str_right_side[STRING_SIZE];
+   strncpy(str_left_side, str, str_start - str);
+   str_left_side[str_start - str] = '\0';
+   strncpy(str_right_side, str_end + 1, strlen(str_end + 1));
+   str_right_side[strlen(str_end + 1)] = '\0';
+   str_start[str_end - str_start] = '\0';
+   result = calculate(str_start + 1, str_end - str_start);
+   if (str_end - str_start == 1) {
       printf("> it is not allowed to leave empty parentheses content\n\n");
       return empty_parentheses_content;
    }
-   /* print the input with its result */
-   printf("> %f\n\n", result);
-   return EXIT_SUCCESS;
-}
-/*reconstruct the current string to its new value*/
-int str_reconst(char* str, char* str_start, char* str_end){
-	double result = 0;
-    char par_str[STRING_SIZE];
-    char str_left_side[STRING_SIZE];
-    char str_right_side[STRING_SIZE];
-	strncpy(str_left_side, str, str_start - str);
-    str_left_side[str_start - str] = '\0';
-    strncpy(str_right_side, str_end + 1, strlen(str_end + 1));
-	str_right_side[strlen(str_end + 1)] = '\0';
-	str_start[str_end - str_start] = '\0';
-	result = calculate(str_start + 1, str_end - str_start);
-	  if (str_end - str_start == 1) {
-		 printf("> it is not allowed to leave empty parentheses content\n\n");
-		 return empty_parentheses_content;
-	  }
-	  sprintf(par_str, "%.6f", result);
+   sprintf(par_str, "%.6f", result);
 
-	  strcpy(str, str_left_side);
-	  strncat(str, par_str, strlen(par_str));
-	  strncat(str, str_right_side, strlen(str_right_side));
-	return 0;
+   strcpy(str, str_left_side);
+   strncat(str, par_str, strlen(par_str));
+   strncat(str, str_right_side, strlen(str_right_side));
+   return result;
 }
 
 /*calculate the given input 'str'*/
@@ -244,6 +254,7 @@ int check_parentheses(char * str) {
       str = start_add;
    }
    if (number_of_parentheses[0] != number_of_parentheses[1]) {
+      printf("> please check your input, you may forgot a parentheses\n\n");
       return parentheses_error;
    }
    return number_of_parentheses[0];
@@ -293,8 +304,8 @@ int is_arith_sign(char * str) {
 
 /*this function returns error for such input ' 10 10', '(10) (10)', '* 10 + 5' or '10 + 5 *'
  * it checks for invalid chars*/
-int check_digit_sign_sequence(char * str) {
-   int len = strlen(str);
+int check_digit_sign_sequence(char * str, int len) {
+   //   int len = strlen(str);
    int ret;
    char * str_ptr, * str_ptr_second, * tmp;
    char * strstart = str;
@@ -392,9 +403,53 @@ int check_digit_sign_sequence(char * str) {
    }
    return 0;
 }
+/*this function is to calculate the content of the reserved key words such as 'abs' and 'sqrt'*/
+int check_researved_words(char * str) {
+   const char researved_words[reserved_strings][10] = {
+      "abs(",
+      "sqrt("
+   };
+   char * ptr, * parenthesis_start, * parenthesis_end, * tmp;
+   int parenthesis_left = 1, parenthesis_right = 0;
+   int cnt;
+   for (cnt = 0; cnt < reserved_strings; cnt++) {
+      while ((ptr = strstr(str, researved_words[cnt])) != NULL) {
+         parenthesis_start = strchr(ptr, '(');
+         tmp = parenthesis_start + 1;
+         while ( * tmp != '\0') {
+            switch ( * tmp) {
+            case '(':
+               parenthesis_left++;
+               tmp++;
+               break;
+            case ')':
+               parenthesis_right++;
+               parenthesis_end = tmp;
+               tmp++;
+               break;
+            default:
+               tmp++;
+            }
+            /*as we come to the end of the parenthesis, while loop is ended*/
+            if (parenthesis_left == parenthesis_right) {
+               /*reset the values of parenthesis_left and parenthesis_right for the next iteration*/
+               parenthesis_left = 1, parenthesis_right = 0;
+               int ret = check_digit_sign_sequence(parenthesis_start, parenthesis_end - parenthesis_start);
+               if (ret < 0) {
+                  return ret;
+               }
+               str_reconst(str, parenthesis_start, parenthesis_end);
+               memset(ptr, ' ', parenthesis_start - ptr);
+               printf("str = %s\n", str);
+               break;
+            }
+         }
+         if (parenthesis_left == parenthesis_right) {
+            printf("> please check your input, you may forgot a parentheses\n\n");
+            return parentheses_error;
+         }
+      }
+   }
 
-
-
-
-
-
+   return 0;
+}

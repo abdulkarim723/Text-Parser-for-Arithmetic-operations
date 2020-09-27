@@ -24,6 +24,8 @@
 /*currently only one string is allocated*/
 #define Num_Strings 1
 
+#define reserved_strings 2
+
 // uncomment to print more stuffs regarding string parsing of the input
 //#define DEBUG_PRINT
 
@@ -39,7 +41,7 @@ int check_sign(char * str);
 void print_func(char ** terminal_input);
 
 /*this function makes check if there are no sign between two numbers*/
-int check_digit_sign_sequence(char * str);
+int check_digit_sign_sequence(char * str, int len);
 
 int is_arith_sign(char * str);
 /*do devision and multiplication operations*/
@@ -49,7 +51,11 @@ double calculate(char * str, int len);
 
 int calculate_numlen_backward(char * str_num);
 
-int str_reconst(char* str, char* start, char* end);
+double str_reconst(char* str, char* start, char* end);
+
+double calculate_parentthesis_content(char* str_o, int len, int parenthesis_num);
+
+int check_researved_words(char* str);
 enum calc_status {
    addition,
    substraction
