@@ -18,16 +18,14 @@
 
 #include <stdbool.h>
 
+#include <math.h>
 
 /* maximum string size */
 #define STRING_SIZE 1024
 /*currently only one string is allocated*/
 #define Num_Strings 1
-
-#define reserved_strings 2
-
-// uncomment to print more stuffs regarding string parsing of the input
-//#define DEBUG_PRINT
+/*number of supported math  expressions*/
+#define reserved_strings 7
 
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
@@ -51,24 +49,25 @@ double calculate(char * str, int len);
 
 int calculate_numlen_backward(char * str_num);
 
-double str_reconst(char* str, char* start, char* end);
+double str_reconst(char * str, char * start, char * end);
 
-double calculate_parentthesis_content(char* str_o, int len, int parenthesis_num);
+double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num);
 
-int check_reserved_words(char* str);
+int check_plus_minus(char * str);
 enum calc_status {
-   addition,
-   substraction
+    addition,
+    substraction
 };
 
 enum error_enum {
-   parentheses_error = -10,
-   invalid_input_character,
-   no_arithmetic_sign,
-   extra_arithmetic_sign,
-   no_numbers_found,
-   memory_allocation_failed,
-   empty_parentheses_content
+    parentheses_error = -10,
+	invalid_input_character,
+	no_arithmetic_sign,
+	extra_arithmetic_sign,
+	no_numbers_found,
+	memory_allocation_failed,
+	empty_parentheses_content,
+	negative_num
 };
 
 #endif /* CALCULATOR_H_ */
