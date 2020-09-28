@@ -32,7 +32,7 @@ int string_parse(char * str) {
     if (ret < 0) {
         return ret;
     }
-    int parenthesis_number = check_parentheses(str);
+    int parenthesis_number = check_parentheses(str, strlen(str));
     if (parenthesis_number == parentheses_error) {
         return parenthesis_number;
     }
@@ -237,7 +237,11 @@ int calculate_numlen_backward(char * str_num) {
 }
 
 /*check if the given string has parentheses and if they are correctly closed*/
-int check_parentheses(char * str) {
+int check_parentheses(char * str_o, int len) {
+    char str_cpy[STRING_SIZE];
+    strcpy(str_cpy, str_o);
+    str_cpy[len] = '\0';
+    char * str = str_cpy;
     char * tmp;
     char * start_add = str;
     char parenthesis[] = "()";
@@ -355,7 +359,7 @@ int check_errors(char * str, int len) {
     /*if the string ends with an arithmetic sign, then it returns error */
     str_status = false;
     if (((str_ptr = strrchr(str, '*')) != NULL || (str_ptr = strrchr(str, '/')) != NULL || (str_ptr = strrchr(str, '%')) != NULL ||
-        (str_ptr = strrchr(str, '+')) != NULL || (str_ptr = strrchr(str, '-')) != NULL) && str_ptr < strend) {
+            (str_ptr = strrchr(str, '+')) != NULL || (str_ptr = strrchr(str, '-')) != NULL) && str_ptr < strend) {
         while (str_ptr < strend) {
             str_ptr++;
             if (isdigit( * str_ptr)) {
@@ -405,7 +409,7 @@ int check_errors(char * str, int len) {
 }
 /*this function is to calculate the content of the reserved key words such as 'abs' and 'sqrt'*/
 int check_reserved_words(char * str) {
-	/*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
+    /*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
     const char researved_words[reserved_strings][10] = {
         "abs(",
         "sqrt(",
@@ -416,7 +420,7 @@ int check_reserved_words(char * str) {
         "sinh("
     };
     enum math_expressions {
-	/*DO NOT CHANGE THE SEQUENCE OF THIS ENUM ELEMENTS. IT IS DANGEROUS.*/
+        /*DO NOT CHANGE THE SEQUENCE OF THIS ENUM ELEMENTS. IT IS DANGEROUS.*/
         ABS,
         SQRT,
         EXP,
@@ -425,6 +429,8 @@ int check_reserved_words(char * str) {
         SIN,
         SINH
     };
+    char str_par[STRING_SIZE];
+    char str_left[STRING_SIZE], str_right[STRING_SIZE], str_mid[STRING_SIZE];
     char * ptr, * parenthesis_start, * parenthesis_end, * tmp;
     int parenthesis_left = 1, parenthesis_right = 0;
     int cnt;
@@ -451,20 +457,25 @@ int check_reserved_words(char * str) {
                 if (parenthesis_left == parenthesis_right) {
                     /*reset the values of parenthesis_left and parenthesis_right for the next iteration*/
                     parenthesis_left = 1, parenthesis_right = 0;
-                    int ret = check_errors(parenthesis_start, parenthesis_end - parenthesis_start);
+                    int ret = check_errors(parenthesis_start, parenthesis_end - parenthesis_start + 1);
                     if (ret < 0) {
                         return ret;
                     }
-                    int parenthesis_number = check_parentheses(str);
+                    int parenthesis_number = check_parentheses(parenthesis_start, parenthesis_end - parenthesis_start + 1);
                     if (parenthesis_number == parentheses_error) {
                         return parenthesis_number;
                     }
+                    /*delete the reserved word*/
                     memset(ptr, ' ', parenthesis_start - ptr);
-                    result = calculate_parentthesis_content(parenthesis_start, parenthesis_end - parenthesis_start + 1, parenthesis_number);
+                    strncpy(str_mid, parenthesis_start, parenthesis_end - parenthesis_start + 1);
+                    str_mid[parenthesis_end - parenthesis_start + 1] = '\0';
+                    if (parenthesis_number > 0) {
+                        result = calculate_parentthesis_content(str_mid, strlen(str_mid), parenthesis_number);
+                    }
                     switch (cnt) {
                     case ABS:
                         result = abs(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     case SQRT:
                         if (result < 0) {
@@ -472,29 +483,36 @@ int check_reserved_words(char * str) {
                             return negative_num;
                         }
                         result = sqrt(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     case EXP:
                         result = exp(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     case COS:
                         result = cos(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     case COSH:
                         result = cosh(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     case SIN:
                         result = sin(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     case SINH:
                         result = sinh(result);
-                        sprintf(str, "%f", result);
+                        sprintf(str_par, "%f", result);
                         break;
                     }
+                    /*reconstruct the original string*/
+                    strncpy(str_left, str, parenthesis_start - str);
+                    str_left[parenthesis_start - str] = '\0';
+                    strncpy(str_right, parenthesis_end + 1, strlen(parenthesis_end));
+                    strcpy(str, str_left);
+                    strncat(str, str_par, strlen(str_par));
+                    strncat(str, str_right, strlen(str_right));
                     break;
                 }
             }

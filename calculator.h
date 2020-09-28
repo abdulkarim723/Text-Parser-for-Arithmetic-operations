@@ -30,7 +30,7 @@
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
 /*check if the given string has parentheses and if they are correctly closed*/
-int check_parentheses(char * str);
+int check_parentheses(char * str, int len);
 /*parse the string given from the user as an input*/
 int string_parse(char * str);
 /*this function checks signs correctness of the string*/
