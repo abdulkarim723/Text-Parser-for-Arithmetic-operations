@@ -24,7 +24,7 @@ int string_parse(char * str) {
     int len = strlen(str) - 1;
     /*remove the new line*/
     memset(str + len, '\0', 1);
-    ret = check_plus_minus(str);
+    ret = check_reserved_words(str);
     if (ret < 0) {
         return ret;
     }
@@ -354,8 +354,8 @@ int check_errors(char * str, int len) {
 
     /*if the string ends with an arithmetic sign, then it returns error */
     str_status = false;
-    if ((str_ptr = strrchr(str, '*')) != NULL || (str_ptr = strrchr(str, '/')) != NULL || (str_ptr = strrchr(str, '%')) != NULL ||
-        (str_ptr = strrchr(str, '+')) != NULL || (str_ptr = strrchr(str, '-')) != NULL) {
+    if (((str_ptr = strrchr(str, '*')) != NULL || (str_ptr = strrchr(str, '/')) != NULL || (str_ptr = strrchr(str, '%')) != NULL ||
+        (str_ptr = strrchr(str, '+')) != NULL || (str_ptr = strrchr(str, '-')) != NULL) && str_ptr < strend) {
         while (str_ptr < strend) {
             str_ptr++;
             if (isdigit( * str_ptr)) {
@@ -404,7 +404,7 @@ int check_errors(char * str, int len) {
     return 0;
 }
 /*this function is to calculate the content of the reserved key words such as 'abs' and 'sqrt'*/
-int check_plus_minus(char * str) {
+int check_reserved_words(char * str) {
 	/*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
     const char researved_words[reserved_strings][10] = {
         "abs(",
@@ -472,7 +472,7 @@ int check_plus_minus(char * str) {
                             return negative_num;
                         }
                         result = sqrt(result);
-                        sprintf(str, "%g", result);
+                        sprintf(str, "%f", result);
                         break;
                     case EXP:
                         result = exp(result);
