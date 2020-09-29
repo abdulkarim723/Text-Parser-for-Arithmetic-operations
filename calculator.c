@@ -11,9 +11,7 @@
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input) {
     strcpy(terminal_input[0], "");
-    printf("> enter a string to be calculated:\n"
-        "> enter 'q' to quit\n"
-        "> ");
+    printf("> ");
     fgets(terminal_input[0], STRING_SIZE, stdin);
 }
 
@@ -42,7 +40,7 @@ int string_parse(char * str) {
     }
     result = calculate(str, strlen(str));
     /* print the input with its result */
-    printf("> %f\n\n", result);
+    printf("%f\n", result);
     return EXIT_SUCCESS;
 }
 
@@ -84,7 +82,7 @@ double str_reconst(char * str, char * str_start, char * str_end) {
     str_start[str_end - str_start] = '\0';
     result = calculate(str_start + 1, str_end - str_start);
     if (str_end - str_start == 1) {
-        printf("> it is not allowed to leave empty parentheses content\n\n");
+        printf("it is not allowed to leave empty parentheses content\n");
         return empty_parentheses_content;
     }
     sprintf(par_str, "%.6f", result);
@@ -98,7 +96,7 @@ double str_reconst(char * str, char * str_start, char * str_end) {
 /*calculate the given input 'str'*/
 double calculate(char * str, int len) {
     /*do devision and multiplication operations*/
-    if (strchr(str, '/') || strchr(str, '*')) {
+    if (strchr(str, '%') || strchr(str, '/') || strchr(str, '*')) {
         calculate_dev_mul(str, len);
     }
     /*num_len is needed to determine the digits length of each number str*/
@@ -259,7 +257,7 @@ int check_parentheses(char * str_o, int len) {
         str = start_add;
     }
     if (number_of_parentheses[0] != number_of_parentheses[1]) {
-        printf("> please check your input, you may forgot a parentheses\n\n");
+        printf("please check your input, you may forgot a parentheses\n");
         return parentheses_error;
     }
     return number_of_parentheses[0];
@@ -318,7 +316,7 @@ int check_errors(char * str, int len) {
     char * strend = str + len;
     char digits[] = "0123456789";
     if (!strpbrk(str, digits)) {
-        printf("> can not read any number, check your input please\n\n");
+        printf("can not read any number, check your input please\n");
         return no_numbers_found;
     }
     /*if the string starts with one of the following chars "*%/", return an error*/
@@ -331,7 +329,7 @@ int check_errors(char * str, int len) {
             }
         }
         if (!str_status) {
-            printf("> extra_arithmetic_sign, input is invalid\n\n");
+            printf("extra_arithmetic_sign, input is invalid\n");
             return extra_arithmetic_sign;
         }
     }
@@ -351,7 +349,7 @@ int check_errors(char * str, int len) {
                 tmp++;
             }
             if (!str_status) {
-                printf("> extra_arithmetic_sign, input is invalid\n\n");
+                printf("extra_arithmetic_sign, input is invalid\n");
                 return extra_arithmetic_sign;
             }
         }
@@ -370,7 +368,7 @@ int check_errors(char * str, int len) {
 
         }
         if (!str_status) {
-            printf("> extra_arithmetic_sign, input is invalid\n\n");
+            printf("extra_arithmetic_sign, input is invalid\n");
             return extra_arithmetic_sign;
         }
     }
@@ -379,7 +377,7 @@ int check_errors(char * str, int len) {
         if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
             *
             str != ' ' && * str != '.' && * str != 'q') {
-            printf("> invalid input\n\n");
+            printf("invalid input\n");
             return invalid_input_character;
         } else if (isdigit( * str)) {
             ret = calculate_numlen(str);
@@ -393,7 +391,7 @@ int check_errors(char * str, int len) {
                 }
                 /*return error for such input ' 10 10' or '(10) 10'*/
                 else if ((isdigit( * str)) || ( * str == '(')) {
-                    printf("> invalid input, missing an arithmetic sign\n\n");
+                    printf("invalid input, missing an arithmetic sign\n");
                     return no_arithmetic_sign;
                 } else {
                     /*string index tuning*/
@@ -421,7 +419,7 @@ int check_reserved_words(char * str) {
         "sinh("
     };
     enum math_expressions {
-        /*DO NOT CHANGE THE SEQUENCE OF THIS ENUM ELEMENTS. IT IS DANGEROUS.*/
+    /*DO NOT CHANGE THE SEQUENCE OF THIS ENUM ELEMENTS. IT IS DANGEROUS.*/
         ABS,
         SQRT,
         EXP,
@@ -480,7 +478,7 @@ int check_reserved_words(char * str) {
                         break;
                     case SQRT:
                         if (result < 0) {
-                            printf("> only positive numbers are accepted for square root\n\n");
+                            printf("> only positive numbers are accepted for square root\n");
                             return negative_num;
                         }
                         result = sqrt(result);
@@ -518,7 +516,7 @@ int check_reserved_words(char * str) {
                 }
             }
             if (parenthesis_left == parenthesis_right) {
-                printf("> please check your input, you may forgot a parentheses\n\n");
+                printf("please check your input, you may forgot a parentheses\n");
                 return parentheses_error;
             }
         }

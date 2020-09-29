@@ -13,8 +13,8 @@ int main() {
     char ** my_input = (char ** ) malloc(sizeof(char));
     /*check the success of memory allocation*/
     if (!my_input) {
-        printf("> memory allocation failed\n"
-            "> exit the program\n");
+        printf("memory allocation failed\n"
+               "exit the program\n");
         return memory_allocation_failed;
     }
 
@@ -23,8 +23,8 @@ int main() {
     for (count = 0; count < Num_Strings; count++) {
         *(my_input + count) = (char * ) malloc(sizeof(char) * STRING_SIZE);
         if (! * (my_input + count)) {
-            printf("> memory allocation failed\n"
-                "> exit the program\n");
+            printf("memory allocation failed\n"
+                   "exit the program\n");
             return memory_allocation_failed;
         }
     }
@@ -38,7 +38,7 @@ int main() {
 
             /*if the user inserted 'q', the program should close*/
             if (!strncmp( * (my_input + count), "q", 1)) {
-                printf("> quit the program\n");
+                printf("quit the program\n");
                 close_program = true;
                 break;
             }

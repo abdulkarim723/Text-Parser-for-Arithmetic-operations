@@ -54,6 +54,7 @@ double str_reconst(char * str, char * start, char * end);
 double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num);
 
 int check_reserved_words(char * str);
+
 enum calc_status {
     addition,
     substraction
