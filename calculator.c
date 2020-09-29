@@ -33,11 +33,12 @@ int string_parse(char * str) {
         return ret;
     }
     int parenthesis_number = check_parentheses(str, strlen(str));
+
     if (parenthesis_number == parentheses_error) {
         return parenthesis_number;
     }
     if (parenthesis_number > 0) {
-        result = calculate_parentthesis_content(str, len, parenthesis_number);
+        result = calculate_parentthesis_content(str, strlen(str), parenthesis_number);
     }
     result = calculate(str, strlen(str));
     /* print the input with its result */
