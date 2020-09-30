@@ -9,10 +9,13 @@ Parentheses and spaces are allowed
 
 int main() {
     int count;
+    double result;
     bool close_program = false;
-    char ** my_input = (char ** ) malloc(sizeof(char));
+    char ** res_str = (char**) malloc(sizeof(char*));
+    *res_str = (char*) malloc(sizeof(char) * 30);
+    char ** my_input = (char ** ) malloc(sizeof(char*));
     /*check the success of memory allocation*/
-    if (!my_input) {
+    if (!my_input || !res_str) {
         printf("memory allocation failed\n"
                "exit the program\n");
         return memory_allocation_failed;
@@ -43,14 +46,14 @@ int main() {
                 break;
             }
             /*parse the input and output the result*/
-            string_parse( * (my_input + count));
+            string_parse( * (my_input + count), res_str[0], &result);
         }
         /*check this flag to close the program in a good manner*/
         if (close_program) {
             break;
         }
     }
-
+    free(res_str);
     free(my_input);
     /*free heap memory for all substrings*/
     for (count = 0; count < Num_Strings; count++) {

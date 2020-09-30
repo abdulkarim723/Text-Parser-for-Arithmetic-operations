@@ -32,7 +32,7 @@ int calculate_numlen(char * str_num);
 /*check if the given string has parentheses and if they are correctly closed*/
 int check_parentheses(char * str, int len);
 /*parse the string given from the user as an input*/
-int string_parse(char * str);
+int string_parse(const char * str_o, char* result_str, double* result);
 /*this function checks signs correctness of the string*/
 int check_sign(char * str);
 /*read the string as an input from the terminal*/
@@ -54,6 +54,8 @@ double str_reconst(char * str, char * start, char * end);
 double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num);
 
 int check_reserved_words(char * str);
+/*this function ignores the zeros which has no value*/
+int control_fraction(char* str, int len);
 
 enum calc_status {
     addition,

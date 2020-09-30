@@ -16,31 +16,47 @@ void print_func(char ** terminal_input) {
 }
 
 /*parse the string given from the user as an input*/
-int string_parse(char * str) {
-    int ret;
-    double result;
-    int len = strlen(str) - 1;
+int string_parse(const char * str_o, char* result_str, double* result) {
+    char** str = (char**)malloc(sizeof(char*));
+    if(!str){
+    	printf("memory allocation failed\n"
+			   "exit the program\n");
+		return memory_allocation_failed;
+    }
+    str[0] = (char*)malloc(sizeof(char) * STRING_SIZE);
+    if (! * (str)) {
+		printf("memory allocation failed\n"
+			   "exit the program\n");
+		return memory_allocation_failed;
+    }
+    strncpy(str[0], str_o, STRING_SIZE);
+    str[STRING_SIZE] = '\0';
+	int ret;
+    int len = strlen(str[0]) - 1;
     /*remove the new line*/
-    memset(str + len, '\0', 1);
-    ret = check_reserved_words(str);
+    memset(str[0] + len, '\0', 1);
+    ret = check_reserved_words(str[0]);
     if (ret < 0) {
         return ret;
     }
-    ret = check_errors(str, strlen(str));
+    ret = check_errors(str[0], strlen(str[0]));
     if (ret < 0) {
         return ret;
     }
-    int parenthesis_number = check_parentheses(str, strlen(str));
+    int parenthesis_number = check_parentheses(str[0], strlen(str[0]));
 
     if (parenthesis_number == parentheses_error) {
         return parenthesis_number;
     }
     if (parenthesis_number > 0) {
-        result = calculate_parentthesis_content(str, strlen(str), parenthesis_number);
+        calculate_parentthesis_content(str[0], strlen(str[0]), parenthesis_number);
     }
-    result = calculate(str, strlen(str));
+    *result = calculate(str[0], strlen(str[0]));
+    sprintf(result_str, "%.6f", *result);
+    control_fraction(result_str, strlen(result_str));
     /* print the input with its result */
-    printf("%f\n", result);
+    printf("%s\n", result_str);
+    free(str);
     return EXIT_SUCCESS;
 }
 
@@ -523,4 +539,21 @@ int check_reserved_words(char * str) {
     }
 
     return 0;
+}
+
+/*this function ignores the zeros which has no value*/
+int control_fraction(char* str, int len){
+	int cnt;
+	for(cnt=0; cnt<6; cnt++){
+		if(str[len - 1] == '0'){
+			str[len - 1] = '\0';
+			len--;
+			if(cnt == 5){
+				str[len - 1] = '\0';
+			}
+			continue;
+		}
+	break;
+	}
+	return 0;
 }
