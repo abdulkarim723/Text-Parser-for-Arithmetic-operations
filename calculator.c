@@ -17,6 +17,9 @@ void print_func(char ** terminal_input) {
 
 /*parse the string given from the user as an input*/
 int string_parse(const char * str_o, char* result_str, double* result) {
+	if(strlen(str_o) == 1){
+		return empty_string;
+	}
     char** str = (char**)malloc(sizeof(char*));
     if(!str){
     	printf("memory allocation failed\n"
@@ -52,7 +55,7 @@ int string_parse(const char * str_o, char* result_str, double* result) {
         calculate_parentthesis_content(str[0], strlen(str[0]), parenthesis_number);
     }
     *result = calculate(str[0], strlen(str[0]));
-    sprintf(result_str, "%.6f", *result);
+    sprintf(result_str, "%.10f", *result);
     control_fraction(result_str, strlen(result_str));
     /* print the input with its result */
     printf("%s\n", result_str);
@@ -101,7 +104,7 @@ double str_reconst(char * str, char * str_start, char * str_end) {
         printf("it is not allowed to leave empty parentheses content\n");
         return empty_parentheses_content;
     }
-    sprintf(par_str, "%.6f", result);
+    sprintf(par_str, "%.10f", result);
 
     strcpy(str, str_left_side);
     strncat(str, par_str, strlen(par_str));
@@ -216,7 +219,7 @@ double calculate_dev_mul(char * str, int len) {
             result = left_number * right_number;
             break;
         }
-        sprintf(result_str, "%0.6f", result);
+        sprintf(result_str, "%0.10f", result);
 
         /*reconstruct the string 'str'*/
         strcpy(str, str_left_side);
@@ -490,7 +493,7 @@ int check_reserved_words(char * str) {
                     switch (cnt) {
                     case ABS:
                         result = abs(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     case SQRT:
                         if (result < 0) {
@@ -498,27 +501,27 @@ int check_reserved_words(char * str) {
                             return negative_num;
                         }
                         result = sqrt(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     case EXP:
                         result = exp(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     case COS:
                         result = cos(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     case COSH:
                         result = cosh(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     case SIN:
                         result = sin(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     case SINH:
                         result = sinh(result);
-                        sprintf(str_par, "%f", result);
+                        sprintf(str_par, "%.10f", result);
                         break;
                     }
                     /*reconstruct the original string*/
@@ -544,11 +547,12 @@ int check_reserved_words(char * str) {
 /*this function ignores the zeros which has no value*/
 int control_fraction(char* str, int len){
 	int cnt;
-	for(cnt=0; cnt<6; cnt++){
+	int DigitsNum = 10;
+	for(cnt=0; cnt<DigitsNum; cnt++){
 		if(str[len - 1] == '0'){
 			str[len - 1] = '\0';
 			len--;
-			if(cnt == 5){
+			if(cnt == (DigitsNum - 1)){
 				str[len - 1] = '\0';
 			}
 			continue;

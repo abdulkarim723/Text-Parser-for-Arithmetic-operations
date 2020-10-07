@@ -2,7 +2,7 @@
 
 This is a string parser which accepts strings in an arithmetic form and calculates the result. If the input has an invalid input, the parser should detect the invalid input and return an error describing the error.
 
-Supported arithmetic operations by the parser till the monment of writing this docu are **(addition, substraction, multiplication, divison and reminder of division, sin, sinh, cos, cosh, abs, sqrt, exp)**.
+Supported arithmetic operations by the parser till the monment of writing this docu are **(addition, substraction, multiplication, divison, reminder of division, sin, sinh, cos, cosh, abs, sqrt, exp)**.
 
 **The tag v1.2 should work in a stable state.**
 
@@ -24,9 +24,9 @@ git clone [git@github.com:Abdsaddik/String_Calculator.git](git@github.com:Abdsad
 > abs(-7)  
 7  
 > exp(1)  
-2.718282  
+2.7182818285  
 > abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) * abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) - ( 9 - 60 ) + cos(0) + sin(90)  
-101.893997  
+101.8939966636  
 > (((10/5) * (9%7))/2) * 3 - (5 - (2 * 3))  
 7  
 > 10 + ( 10 + 5  

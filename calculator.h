@@ -70,7 +70,8 @@ enum error_enum {
 	no_numbers_found,
 	memory_allocation_failed,
 	empty_parentheses_content,
-	negative_num
+	negative_num,
+	empty_string
 };
 
 #endif /* CALCULATOR_H_ */
