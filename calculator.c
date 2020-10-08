@@ -115,14 +115,14 @@ double str_reconst(char * str, char * str_start, char * str_end) {
 /*calculate the given input 'str'*/
 double calculate(char * str, int len) {
     /*do devision and multiplication operations*/
-    if (strchr(str, '%') || strchr(str, '/') || strchr(str, '*')) {
+    if (strchr(str, '^') || strchr(str, '%') || strchr(str, '/') || strchr(str, '*')) {
         calculate_dev_mul(str, len);
     }
     /*num_len is needed to determine the digits length of each number str*/
     int num_len = 0;
     /*result: is the last result of the calculation operations*/
     double result = 0;
-    char tmp[20];
+    char tmp[50];
     int ret = 0;
     enum calc_status calc_stat;
     /*as the string str was reconstructed in the function calculate_dev_mul(), we need to update the value of len*/
@@ -183,9 +183,9 @@ double calculate_dev_mul(char * str, int len) {
     char str_right_side[STRING_SIZE];
     char * dev_mult;
     char * tmp = NULL;
-    while ((dev_mult = strchr(str, '%')) != NULL || (dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
+    while ( (dev_mult = strchr(str, '^')) != NULL || (dev_mult = strchr(str, '%')) != NULL || (dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
         tmp = dev_mult;
-        while ( * dev_mult == ' ' || * dev_mult == '%' || * dev_mult == '/' || * dev_mult == '*') {
+        while ( * dev_mult == ' ' || * dev_mult == '^' || * dev_mult == '%' || * dev_mult == '/' || * dev_mult == '*') {
             dev_mult++;
             len--;
             continue;
@@ -196,7 +196,7 @@ double calculate_dev_mul(char * str, int len) {
         strncpy(str_right_side, dev_mult + ret, strlen(str) - (dev_mult - str) + ret);
         str_right_side[strlen(str) - (dev_mult - str) + ret] = '\0';
         dev_mult = tmp;
-        while ( * dev_mult == ' ' || * dev_mult == '%' || * dev_mult == '/' || * dev_mult == '*') {
+        while ( * dev_mult == ' ' || * dev_mult == '^' || * dev_mult == '%' || * dev_mult == '/' || * dev_mult == '*') {
             dev_mult--;
             len--;
             continue;
@@ -209,6 +209,9 @@ double calculate_dev_mul(char * str, int len) {
         right_number = strtod(right_num, NULL);
         left_number = strtod(left_num, NULL);
         switch ( * tmp) {
+        case '^':
+        	result = pow(left_number, right_number);
+        	break;
         case '%':
             result = (long int) left_number % (long int) right_number;
             break;
@@ -394,8 +397,7 @@ int check_errors(char * str, int len) {
 
     while (len > 0) {
         if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
-            *
-            str != ' ' && * str != '.' && * str != 'q') {
+            * str != ' ' && * str != '.' && * str != 'q' && * str != '^') {
             printf("invalid input\n");
             return invalid_input_character;
         } else if (isdigit( * str)) {
@@ -434,8 +436,21 @@ int check_reserved_words(char * str) {
         "exp(",
         "cos(",
         "cosh(",
+		"acos(",
+		"acosh(",
         "sin(",
-        "sinh("
+        "sinh(",
+		"asin(",
+		"asinh(",
+		"tan(",
+		"tanh(",
+		"atan(",
+		"atanh(",
+		"floor(",
+		"log(",
+		"log10(",
+		"cbrt(",
+		"ceil"
     };
     enum math_expressions {
     /*DO NOT CHANGE THE SEQUENCE OF THIS ENUM ELEMENTS. IT IS DANGEROUS.*/
@@ -444,8 +459,21 @@ int check_reserved_words(char * str) {
         EXP,
         COS,
         COSH,
+		ACOS,
+		ACOSH,
         SIN,
-        SINH
+        SINH,
+		ASIN,
+		ASINH,
+		TAN,
+		TANH,
+		ATAN,
+		ATANH,
+		FLOOR,
+		LOG,
+		LOG10,
+		CBRT,
+		CEIL
     };
     char str_par[STRING_SIZE];
     char str_left[STRING_SIZE], str_right[STRING_SIZE], str_mid[STRING_SIZE];
@@ -497,7 +525,7 @@ int check_reserved_words(char * str) {
                         break;
                     case SQRT:
                         if (result < 0) {
-                            printf("> only positive numbers are accepted for square root\n");
+                            printf("only positive numbers are accepted for square root\n");
                             return negative_num;
                         }
                         result = sqrt(result);
@@ -515,6 +543,22 @@ int check_reserved_words(char * str) {
                         result = cosh(result);
                         sprintf(str_par, "%.10f", result);
                         break;
+                    case ACOS:
+                    	if(result<-1 || result>1){
+                    		printf("out of range input for acos() function\n");
+                    		return out_of_range;
+                    	}
+                    	result = acos(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case ACOSH:
+						if(result<1){
+							printf("out of range input for acosh() function\n");
+							return out_of_range;
+						}
+						result = acosh(result);
+						sprintf(str_par, "%.10f", result);
+						break;
                     case SIN:
                         result = sin(result);
                         sprintf(str_par, "%.10f", result);
@@ -523,6 +567,66 @@ int check_reserved_words(char * str) {
                         result = sinh(result);
                         sprintf(str_par, "%.10f", result);
                         break;
+                    case ASIN:
+						if(result<-1 || result>1){
+							printf("out of range input for asin() function\n");
+							return out_of_range;
+						}
+						result = asin(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case ASINH:
+						result = asinh(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case TAN:
+                    	result = tan(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case TANH:
+                    	result = tanh(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case ATAN:
+						result = atan(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case ATANH:
+                    	if(result<-1 || result>1){
+							printf("out of range input for atanh() function\n");
+							return out_of_range;
+						}
+						result = atanh(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case FLOOR:
+                    	result = floor(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case LOG:
+                    	if (result <= 0) {
+							printf("only positive numbers are accepted for logarithm\n");
+							return negative_num;
+						}
+						result = log(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case LOG10:
+                    	if (result <= 0) {
+							printf("only positive numbers are accepted for logarithm\n");
+							return negative_num;
+						}
+						result = log10(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case CBRT:
+                    	result = cbrt(result);
+						sprintf(str_par, "%.10f", result);
+						break;
+                    case CEIL:
+						result = ceil(result);
+						sprintf(str_par, "%.10f", result);
+						break;
                     }
                     /*reconstruct the original string*/
                     strncpy(str_left, str, parenthesis_start - str);
@@ -539,8 +643,8 @@ int check_reserved_words(char * str) {
                 return parentheses_error;
             }
         }
-    }
 
+    }
     return 0;
 }
 

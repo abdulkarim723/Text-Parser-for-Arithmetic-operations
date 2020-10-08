@@ -24,8 +24,9 @@
 #define STRING_SIZE 1024
 /*currently only one string is allocated*/
 #define Num_Strings 1
-/*number of supported math  expressions*/
-#define reserved_strings 7
+/*number of supported math  expressions
+ * it should be exactly the number of supported expressions*/
+#define reserved_strings 20
 
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
@@ -71,7 +72,8 @@ enum error_enum {
 	memory_allocation_failed,
 	empty_parentheses_content,
 	negative_num,
-	empty_string
+	empty_string,
+	out_of_range
 };
 
 #endif /* CALCULATOR_H_ */
