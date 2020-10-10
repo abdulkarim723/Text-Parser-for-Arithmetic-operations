@@ -70,8 +70,12 @@ please check your input, you may forgot a parenthesis
 invalid input, missing an arithmetic sign  
 ```
 **Quit the program**  
-type 'q' in the terminal and press 'ENTER'  
+type 'q' or 'quit' in the terminal and press 'ENTER'  
 ```
 > q  
+quit the program
+```
+```
+> quit  
 quit the program
 ```

@@ -397,7 +397,7 @@ int check_errors(char * str, int len) {
 
     while (len > 0) {
         if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
-            * str != ' ' && * str != '.' && * str != 'q' && * str != '^') {
+            * str != ' ' && * str != '.' && * str != '^') {
             printf("invalid input\n");
             return invalid_input_character;
         } else if (isdigit( * str)) {
@@ -485,7 +485,9 @@ int check_reserved_words(char * str) {
         while ((ptr = strstr(str, researved_words[cnt])) != NULL) {
             parenthesis_start = strchr(ptr, '(');
             tmp = parenthesis_start + 1;
-            while ( * tmp != '\0') {
+            /*delete the reserved word*/
+			memset(ptr, ' ', parenthesis_start - ptr);
+            while ( *tmp != '\0') {
                 switch ( * tmp) {
                 case '(':
                     parenthesis_left++;
@@ -511,8 +513,6 @@ int check_reserved_words(char * str) {
                     if (parenthesis_number == parentheses_error) {
                         return parenthesis_number;
                     }
-                    /*delete the reserved word*/
-                    memset(ptr, ' ', parenthesis_start - ptr);
                     strncpy(str_mid, parenthesis_start, parenthesis_end - parenthesis_start + 1);
                     str_mid[parenthesis_end - parenthesis_start + 1] = '\0';
                     if (parenthesis_number > 0) {
@@ -637,10 +637,6 @@ int check_reserved_words(char * str) {
                     strncat(str, str_right, strlen(str_right));
                     break;
                 }
-            }
-            if (parenthesis_left == parenthesis_right) {
-                printf("please check your input, you may forgot a parentheses\n");
-                return parentheses_error;
             }
         }
 

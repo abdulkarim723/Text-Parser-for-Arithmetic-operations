@@ -39,8 +39,9 @@ int main() {
             /*communicate with the user and read the input from the terminal*/
             print_func(my_input);
 
-            /*if the user inserted 'q', the program should close*/
-            if (!strncmp( * (my_input + count), "q", 1)) {
+            /*if the user inserted 'q' or 'quit', the program should close*/
+            if (!strncmp( * (my_input + count), "q", strlen(* (my_input + count)) - 1) ||
+            		!strncmp( * (my_input + count), "quit", strlen(* (my_input + count)) - 1)) {
                 printf("quit the program\n");
                 close_program = true;
                 break;
