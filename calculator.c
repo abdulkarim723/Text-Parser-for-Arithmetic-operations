@@ -7,6 +7,29 @@
 
 #include "calculator.h"
 
+/*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
+const char researved_words[reserved_strings][10] = {
+    "abs(",
+    "sqrt(",
+    "exp(",
+    "cos(",
+    "cosh(",
+    "acos(",
+    "acosh(",
+    "sin(",
+    "sinh(",
+    "asin(",
+    "asinh(",
+    "tan(",
+    "tanh(",
+    "atan(",
+    "atanh(",
+    "floor(",
+    "log(",
+    "log10(",
+    "cbrt(",
+    "ceil"
+};
 
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input) {
@@ -16,25 +39,25 @@ void print_func(char ** terminal_input) {
 }
 
 /*parse the string given from the user as an input*/
-int string_parse(const char * str_o, char* result_str, double* result) {
-	if(strlen(str_o) == 1){
-		return empty_string;
-	}
-    char** str = (char**)malloc(sizeof(char*));
-    if(!str){
-    	printf("memory allocation failed\n"
-			   "exit the program\n");
-		return memory_allocation_failed;
+int string_parse(const char * str_o, char * result_str, double * result) {
+    if (strlen(str_o) == 1) {
+        return empty_string;
     }
-    str[0] = (char*)malloc(sizeof(char) * STRING_SIZE);
+    char ** str = (char ** ) malloc(sizeof(char * ));
+    if (!str) {
+        printf("memory allocation failed\n"
+            "exit the program\n");
+        return memory_allocation_failed;
+    }
+    str[0] = (char * ) malloc(sizeof(char) * STRING_SIZE);
     if (! * (str)) {
-		printf("memory allocation failed\n"
-			   "exit the program\n");
-		return memory_allocation_failed;
+        printf("memory allocation failed\n"
+            "exit the program\n");
+        return memory_allocation_failed;
     }
     strncpy(str[0], str_o, STRING_SIZE);
     str[STRING_SIZE] = '\0';
-	int ret;
+    int ret;
     int len = strlen(str[0]) - 1;
     /*remove the new line*/
     memset(str[0] + len, '\0', 1);
@@ -47,15 +70,16 @@ int string_parse(const char * str_o, char* result_str, double* result) {
         return ret;
     }
     int parenthesis_number = check_parentheses(str[0], strlen(str[0]));
-
     if (parenthesis_number == parentheses_error) {
         return parenthesis_number;
     }
+
     if (parenthesis_number > 0) {
         calculate_parentthesis_content(str[0], strlen(str[0]), parenthesis_number);
     }
-    *result = calculate(str[0], strlen(str[0]));
-    sprintf(result_str, "%.10f", *result);
+    check_sign(str[0], strlen(str[0]));
+    * result = calculate(str[0], strlen(str[0]));
+    sprintf(result_str, "%.15f", * result);
     control_fraction(result_str, strlen(result_str));
     /* print the input with its result */
     printf("%s\n", result_str);
@@ -72,7 +96,6 @@ double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num
     int cnt;
     tmpstr = str;
     /*update the input*/
-
     while (parenthesis_num) {
         for (cnt = 0; cnt < parenthesis_num; cnt++) {
             strstart = strstr(tmpstr, "(");
@@ -81,10 +104,10 @@ double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num
         strend = strstr(tmpstr, ")");
         result = str_reconst(str, strstart, strend);
         parenthesis_num--;
-        check_sign(str);
+        check_sign(str, strlen(str));
         tmpstr = str;
     }
-    check_sign(str);
+    check_sign(str, strlen(str));
     strcpy(str_o, str);
     return result;
 }
@@ -104,7 +127,7 @@ double str_reconst(char * str, char * str_start, char * str_end) {
         printf("it is not allowed to leave empty parentheses content\n");
         return empty_parentheses_content;
     }
-    sprintf(par_str, "%.10f", result);
+    sprintf(par_str, "%.15f", result);
 
     strcpy(str, str_left_side);
     strncat(str, par_str, strlen(par_str));
@@ -118,6 +141,7 @@ double calculate(char * str, int len) {
     if (strchr(str, '^') || strchr(str, '%') || strchr(str, '/') || strchr(str, '*')) {
         calculate_dev_mul(str, len);
     }
+    check_sign(str, strlen(str));
     /*num_len is needed to determine the digits length of each number str*/
     int num_len = 0;
     /*result: is the last result of the calculation operations*/
@@ -174,23 +198,25 @@ double calculate(char * str, int len) {
 /*as in math, the devision had the first priority then comes multiplication*/
 double calculate_dev_mul(char * str, int len) {
     /*here I made the assumption, that every single double has a maximum size of 20 char digit*/
-    char right_num[20];
-    char left_num[20];
-    char result_str[20];
+    char right_num[50];
+    char left_num[50];
+    char result_str[50];
     double right_number, left_number, result = 0;
     int ret;
     char str_left_side[STRING_SIZE];
     char str_right_side[STRING_SIZE];
     char * dev_mult;
     char * tmp = NULL;
-    while ( (dev_mult = strchr(str, '^')) != NULL || (dev_mult = strchr(str, '%')) != NULL || (dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
+    while ((dev_mult = strchr(str, '^')) != NULL || (dev_mult = strchr(str, '%')) != NULL || (dev_mult = strchr(str, '/')) != NULL || (dev_mult = strchr(str, '*')) != NULL) {
         tmp = dev_mult;
         while ( * dev_mult == ' ' || * dev_mult == '^' || * dev_mult == '%' || * dev_mult == '/' || * dev_mult == '*') {
             dev_mult++;
             len--;
             continue;
         }
-        ret = calculate_numlen(dev_mult);
+
+        ret = calculate_numlen_sign(dev_mult);
+
         strncpy(right_num, dev_mult, ret);
         right_num[ret] = '\0';
         strncpy(str_right_side, dev_mult + ret, strlen(str) - (dev_mult - str) + ret);
@@ -210,8 +236,8 @@ double calculate_dev_mul(char * str, int len) {
         left_number = strtod(left_num, NULL);
         switch ( * tmp) {
         case '^':
-        	result = pow(left_number, right_number);
-        	break;
+            result = pow(left_number, right_number);
+            break;
         case '%':
             result = (long int) left_number % (long int) right_number;
             break;
@@ -222,7 +248,7 @@ double calculate_dev_mul(char * str, int len) {
             result = left_number * right_number;
             break;
         }
-        sprintf(result_str, "%0.10f", result);
+        sprintf(result_str, "%0.15f", result);
 
         /*reconstruct the string 'str'*/
         strcpy(str, str_left_side);
@@ -234,6 +260,28 @@ double calculate_dev_mul(char * str, int len) {
         len--;
     }
     return result;
+}
+
+int calculate_numlen_sign(char * str_num) {
+    int cnt = 0;
+    bool do_once = true, do_one = true;
+    while (1) {
+        if (str_num[cnt] == ' ' && do_once == true) {
+            cnt++;
+            continue;
+        } else if ((str_num[cnt] == '-' || str_num[cnt] == '+') && do_one == true) {
+            do_once = false;
+            do_one = false;
+            cnt++;
+        } else if (isdigit(str_num[cnt]) || (str_num[cnt] == '.' && isdigit(str_num[cnt + 1]))) {
+            cnt++;
+            do_one = false;
+        }
+        //
+        else
+            break;
+    }
+    return cnt;
 }
 
 /*calculate the substring length for every single number in the main string*/
@@ -287,8 +335,7 @@ int check_parentheses(char * str_o, int len) {
 
 /*this function checks signs correctness of the string
  * is function is implemented after removing parentheses*/
-int check_sign(char * str) {
-    int len = strlen(str);
+int check_sign(char * str, int len) {
     char * tmp;
     while (len) {
         if ( * str == '-') {
@@ -361,7 +408,7 @@ int check_errors(char * str, int len) {
     tmp = str;
     while ((str_ptr = strpbrk(tmp, "*/%+")) != NULL) {
         tmp = str_ptr + 1;
-        if ((str_ptr_second = strpbrk(tmp, "*/%+")) != NULL) {
+        if ((str_ptr_second = strpbrk(tmp, "*/%")) != NULL) {
             while (str_ptr_second > tmp) {
                 if (isdigit( * tmp) || * tmp == '(') {
                     str_status = true;
@@ -397,7 +444,8 @@ int check_errors(char * str, int len) {
 
     while (len > 0) {
         if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
-            * str != ' ' && * str != '.' && * str != '^') {
+            *
+            str != ' ' && * str != '.' && * str != '^') {
             printf("invalid input\n");
             return invalid_input_character;
         } else if (isdigit( * str)) {
@@ -427,237 +475,221 @@ int check_errors(char * str, int len) {
     }
     return 0;
 }
+
+char * find_last_word(char * str) {
+    int cnt = 0;
+    int Num_Cnt = 0;
+    bool RetType = false;
+    char * par_start = NULL, * tmp, * ret_ptr;
+    int count = 0;
+    while ((par_start = strchr(str, '(')) != NULL) {
+        count = 0;
+        tmp = par_start - 1;
+        while (isalpha( * tmp)) {
+            tmp--;
+            count++;
+
+        }
+        for (cnt = 0; cnt < reserved_strings; cnt++) {
+            if (!strncmp(tmp + 1, researved_words[cnt], strlen(researved_words[cnt]))) {
+                ret_ptr = tmp + 1;
+                RetType = true;
+                Num_Cnt++;
+                break;
+            }
+
+        }
+        str = par_start + 1;
+    }
+
+    if (RetType == true) {
+        return ret_ptr;
+    } else
+        return NULL;
+
+}
 /*this function is to calculate the content of the reserved key words such as 'abs' and 'sqrt'*/
 int check_reserved_words(char * str) {
-    /*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
-    const char researved_words[reserved_strings][10] = {
-        "abs(",
-        "sqrt(",
-        "exp(",
-        "cos(",
-        "cosh(",
-		"acos(",
-		"acosh(",
-        "sin(",
-        "sinh(",
-		"asin(",
-		"asinh(",
-		"tan(",
-		"tanh(",
-		"atan(",
-		"atanh(",
-		"floor(",
-		"log(",
-		"log10(",
-		"cbrt(",
-		"ceil"
-    };
-    enum math_expressions {
-    /*DO NOT CHANGE THE SEQUENCE OF THIS ENUM ELEMENTS. IT IS DANGEROUS.*/
-        ABS,
-        SQRT,
-        EXP,
-        COS,
-        COSH,
-		ACOS,
-		ACOSH,
-        SIN,
-        SINH,
-		ASIN,
-		ASINH,
-		TAN,
-		TANH,
-		ATAN,
-		ATANH,
-		FLOOR,
-		LOG,
-		LOG10,
-		CBRT,
-		CEIL
-    };
     char str_par[STRING_SIZE];
-    char str_left[STRING_SIZE], str_right[STRING_SIZE], str_mid[STRING_SIZE];
-    char * ptr, * parenthesis_start, * parenthesis_end, * tmp;
+    char str_left[STRING_SIZE], str_right[STRING_SIZE];
+    char * ptr, * parenthesis_start, * parenthesis_end, * tmp, * ret_ptr;
     int parenthesis_left = 1, parenthesis_right = 0;
     int cnt;
     double result;
-    for (cnt = 0; cnt < reserved_strings; cnt++) {
-        while ((ptr = strstr(str, researved_words[cnt])) != NULL) {
-            parenthesis_start = strchr(ptr, '(');
-            tmp = parenthesis_start + 1;
-            /*delete the reserved word*/
-			memset(ptr, ' ', parenthesis_start - ptr);
-            while ( *tmp != '\0') {
-                switch ( * tmp) {
-                case '(':
-                    parenthesis_left++;
-                    tmp++;
-                    break;
-                case ')':
-                    parenthesis_right++;
-                    parenthesis_end = tmp;
-                    tmp++;
-                    break;
-                default:
-                    tmp++;
-                }
-                /*as we come to the end of the parenthesis, while loop is ended*/
-                if (parenthesis_left == parenthesis_right) {
-                    /*reset the values of parenthesis_left and parenthesis_right for the next iteration*/
-                    parenthesis_left = 1, parenthesis_right = 0;
-                    int ret = check_errors(parenthesis_start, parenthesis_end - parenthesis_start + 1);
-                    if (ret < 0) {
-                        return ret;
-                    }
-                    int parenthesis_number = check_parentheses(parenthesis_start, parenthesis_end - parenthesis_start + 1);
-                    if (parenthesis_number == parentheses_error) {
-                        return parenthesis_number;
-                    }
-                    strncpy(str_mid, parenthesis_start, parenthesis_end - parenthesis_start + 1);
-                    str_mid[parenthesis_end - parenthesis_start + 1] = '\0';
-                    if (parenthesis_number > 0) {
-                        result = calculate_parentthesis_content(str_mid, strlen(str_mid), parenthesis_number);
-                    }
-                    switch (cnt) {
-                    case ABS:
-                        result = abs(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case SQRT:
-                        if (result < 0) {
-                            printf("only positive numbers are accepted for square root\n");
-                            return negative_num;
-                        }
-                        result = sqrt(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case EXP:
-                        result = exp(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case COS:
-                        result = cos(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case COSH:
-                        result = cosh(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case ACOS:
-                    	if(result<-1 || result>1){
-                    		printf("out of range input for acos() function\n");
-                    		return out_of_range;
-                    	}
-                    	result = acos(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case ACOSH:
-						if(result<1){
-							printf("out of range input for acosh() function\n");
-							return out_of_range;
-						}
-						result = acosh(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case SIN:
-                        result = sin(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case SINH:
-                        result = sinh(result);
-                        sprintf(str_par, "%.10f", result);
-                        break;
-                    case ASIN:
-						if(result<-1 || result>1){
-							printf("out of range input for asin() function\n");
-							return out_of_range;
-						}
-						result = asin(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case ASINH:
-						result = asinh(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case TAN:
-                    	result = tan(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case TANH:
-                    	result = tanh(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case ATAN:
-						result = atan(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case ATANH:
-                    	if(result<-1 || result>1){
-							printf("out of range input for atanh() function\n");
-							return out_of_range;
-						}
-						result = atanh(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case FLOOR:
-                    	result = floor(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case LOG:
-                    	if (result <= 0) {
-							printf("only positive numbers are accepted for logarithm\n");
-							return negative_num;
-						}
-						result = log(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case LOG10:
-                    	if (result <= 0) {
-							printf("only positive numbers are accepted for logarithm\n");
-							return negative_num;
-						}
-						result = log10(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case CBRT:
-                    	result = cbrt(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    case CEIL:
-						result = ceil(result);
-						sprintf(str_par, "%.10f", result);
-						break;
-                    }
-                    /*reconstruct the original string*/
-                    strncpy(str_left, str, parenthesis_start - str);
-                    str_left[parenthesis_start - str] = '\0';
-                    strncpy(str_right, parenthesis_end + 1, strlen(parenthesis_end));
-                    strcpy(str, str_left);
-                    strncat(str, str_par, strlen(str_par));
-                    strncat(str, str_right, strlen(str_right));
-                    break;
-                }
+    while ((ptr = find_last_word(str)) != NULL) {
+        parenthesis_start = strchr(ptr, '(');
+        for (cnt = 0; cnt < reserved_strings; cnt++) {
+            if (!strncmp(ptr, researved_words[cnt], parenthesis_start - ptr)) {
+                break;
             }
         }
+        tmp = parenthesis_start + 1;
+        while ((ret_ptr = strpbrk(tmp, "()")) != NULL) {
+            tmp = ret_ptr + 1;
+            switch ( * ret_ptr) {
+            case '(':
+                parenthesis_left++;
+                break;
+            case ')':
+                parenthesis_right++;
+                parenthesis_end = ret_ptr;
+                break;
+            }
+            if (parenthesis_left == parenthesis_right) {
+                parenthesis_left = 1, parenthesis_right = 0;
+                break;
+            }
+        }
+        strncpy(str_right, parenthesis_end + 1, strlen(parenthesis_end));
 
+        /*delete the reserved word*/
+        memset(ptr, ' ', parenthesis_start - ptr);
+        int ret = check_errors(parenthesis_start, parenthesis_end - parenthesis_start + 1);
+        if (ret < 0) {
+            return ret;
+        }
+        int parenthesis_number = check_parentheses(parenthesis_start, parenthesis_end - parenthesis_start + 1);
+        if (parenthesis_number == parentheses_error) {
+            return parenthesis_number;
+        }
+
+        if (parenthesis_number > 0) {
+            result = calculate_parentthesis_content(parenthesis_start, parenthesis_end - parenthesis_start + 1, parenthesis_number);
+        }
+        switch (cnt) {
+        case ABS:
+            result = abs(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case SQRT:
+            if (result < 0) {
+                printf("only positive numbers are accepted for square root\n");
+                return negative_num;
+            }
+            result = sqrt(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case EXP:
+            result = exp(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case COS:
+            result = cos(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case COSH:
+            result = cosh(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case ACOS:
+            if (result < -1 || result > 1) {
+                printf("out of range input for acos() function\n");
+                return out_of_range;
+            }
+            result = acos(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case ACOSH:
+            if (result < 1) {
+                printf("out of range input for acosh() function\n");
+                return out_of_range;
+            }
+            result = acosh(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case SIN:
+            result = sin(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case SINH:
+            result = sinh(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case ASIN:
+            if (result < -1 || result > 1) {
+                printf("out of range input for asin() function\n");
+                return out_of_range;
+            }
+            result = asin(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case ASINH:
+            result = asinh(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case TAN:
+            result = tan(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case TANH:
+            result = tanh(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case ATAN:
+            result = atan(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case ATANH:
+            if (result < -1 || result > 1) {
+                printf("out of range input for atanh() function\n");
+                return out_of_range;
+            }
+            result = atanh(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case FLOOR:
+            result = floor(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case LOG:
+            if (result <= 0) {
+                printf("only positive numbers are accepted for logarithm\n");
+                return negative_num;
+            }
+            result = log(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case LOG10:
+            if (result <= 0) {
+                printf("only positive numbers are accepted for logarithm\n");
+                return negative_num;
+            }
+            result = log10(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case CBRT:
+            result = cbrt(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        case CEIL:
+            result = ceil(result);
+            sprintf(str_par, "%.15f", result);
+            break;
+        }
+        /*reconstruct the original string*/
+        strncpy(str_left, str, parenthesis_start - str);
+        str_left[parenthesis_start - str] = '\0';
+        strcpy(str, str_left);
+        strncat(str, str_par, strlen(str_par));
+        strncat(str, str_right, strlen(str_right));
     }
     return 0;
 }
 
 /*this function ignores the zeros which has no value*/
-int control_fraction(char* str, int len){
-	int cnt;
-	int DigitsNum = 10;
-	for(cnt=0; cnt<DigitsNum; cnt++){
-		if(str[len - 1] == '0'){
-			str[len - 1] = '\0';
-			len--;
-			if(cnt == (DigitsNum - 1)){
-				str[len - 1] = '\0';
-			}
-			continue;
-		}
-	break;
-	}
-	return 0;
+int control_fraction(char * str, int len) {
+    int cnt;
+    int DigitsNum = 15;
+    for (cnt = 0; cnt < DigitsNum; cnt++) {
+        if (str[len - 1] == '0') {
+            str[len - 1] = '\0';
+            len--;
+            if (cnt == (DigitsNum - 1)) {
+                str[len - 1] = '\0';
+            }
+            continue;
+        }
+        break;
+    }
+    return 0;
 }

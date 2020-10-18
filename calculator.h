@@ -33,9 +33,9 @@ int calculate_numlen(char * str_num);
 /*check if the given string has parentheses and if they are correctly closed*/
 int check_parentheses(char * str, int len);
 /*parse the string given from the user as an input*/
-int string_parse(const char * str_o, char* result_str, double* result);
+int string_parse(const char * str_o, char * result_str, double * result);
 /*this function checks signs correctness of the string*/
-int check_sign(char * str);
+int check_sign(char * str, int len);
 /*read the string as an input from the terminal*/
 void print_func(char ** terminal_input);
 
@@ -56,7 +56,11 @@ double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num
 
 int check_reserved_words(char * str);
 /*this function ignores the zeros which has no value*/
-int control_fraction(char* str, int len);
+int control_fraction(char * str, int len);
+
+char * find_last_word(char * str);
+
+int calculate_numlen_sign(char * str_num);
 
 enum calc_status {
     addition,
@@ -74,6 +78,29 @@ enum error_enum {
 	negative_num,
 	empty_string,
 	out_of_range
+};
+
+enum math_expressions {
+    ABS,
+    SQRT,
+    EXP,
+    COS,
+    COSH,
+    ACOS,
+    ACOSH,
+    SIN,
+    SINH,
+    ASIN,
+    ASINH,
+    TAN,
+    TANH,
+    ATAN,
+    ATANH,
+    FLOOR,
+    LOG,
+    LOG10,
+    CBRT,
+    CEIL
 };
 
 #endif /* CALCULATOR_H_ */

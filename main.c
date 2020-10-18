@@ -1,8 +1,7 @@
 /******************************************************************************
 Author: A. Saddik
-string calculator
+string calculator (Terminal Calculator
 The user adds an arithmetic expression which is calculated by the program
-Parentheses and spaces are allowed
 *******************************************************************************/
 
 #include "calculator.h"
@@ -11,13 +10,13 @@ int main() {
     int count;
     double result;
     bool close_program = false;
-    char ** res_str = (char**) malloc(sizeof(char*));
-    *res_str = (char*) malloc(sizeof(char) * 30);
-    char ** my_input = (char ** ) malloc(sizeof(char*));
+    char ** res_str = (char ** ) malloc(sizeof(char * ));
+    * res_str = (char * ) malloc(sizeof(char) * 30);
+    char ** my_input = (char ** ) malloc(sizeof(char * ));
     /*check the success of memory allocation*/
     if (!my_input || !res_str) {
         printf("memory allocation failed\n"
-               "exit the program\n");
+            "exit the program\n");
         return memory_allocation_failed;
     }
 
@@ -27,7 +26,7 @@ int main() {
         *(my_input + count) = (char * ) malloc(sizeof(char) * STRING_SIZE);
         if (! * (my_input + count)) {
             printf("memory allocation failed\n"
-                   "exit the program\n");
+                "exit the program\n");
             return memory_allocation_failed;
         }
     }
@@ -40,14 +39,14 @@ int main() {
             print_func(my_input);
 
             /*if the user inserted 'q' or 'quit', the program should close*/
-            if (!strncmp( * (my_input + count), "q", strlen(* (my_input + count)) - 1) ||
-            		!strncmp( * (my_input + count), "quit", strlen(* (my_input + count)) - 1)) {
+            if (!strncmp( * (my_input + count), "q", 1) ||
+                !strncmp( * (my_input + count), "quit", 4)) {
                 printf("quit the program\n");
                 close_program = true;
                 break;
             }
             /*parse the input and output the result*/
-            string_parse( * (my_input + count), res_str[0], &result);
+            string_parse( * (my_input + count), res_str[0], & result);
         }
         /*check this flag to close the program in a good manner*/
         if (close_program) {

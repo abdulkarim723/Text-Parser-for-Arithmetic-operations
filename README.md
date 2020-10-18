@@ -32,7 +32,7 @@ After one run the program, one can simply type the mathematic that he wants to b
 **Power of value e**  
 ```
 > exp(1)  
-2.7182818285  
+2.718281828459045  
 ```
 **Power of a value**  
 ```
@@ -44,21 +44,26 @@ Calculate the sine or hyperbolic tangent of a value in radian
 **Example of sin()**  
 ```
 > sin(180)  
--0.8011526357  
+-0.80115263573383  
 ```
 **Example of tanh()**  
 ```
 > tanh(0.4)
-0.3799489623
+0.379948962255225  
 ```
 **Mixed Example**  
 ```
 > sin(180) + tanh(0.4)
--0.4212036734
+-0.421203673478605
+```
+**Nested Functions are supported**
+```
+sin(sin(sin(90)))  
+0.702981543566823
 ```
 **Note**  
 In the same manner one can use other arithmetich operations such as cos, cosh, etc  
-**Mixed input:** The purpose of this program is to enable the user to calculate long arithmetic strings.  
+
 ```
 > abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) * abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) - ( 9 - 60 ) + cos(0) + sin(90)  
 101.8939966636  
