@@ -4,7 +4,6 @@ This is a string parser which accepts strings in an arithmetic form and calculat
 
 Supported arithmetic operations by the parser till the monment of writing this docu are **(addition, substraction, multiplication, divison, reminder of division, power of a value, sin, sinh, asin, asinh, cos, cosh, acos, acosh, tan, tanh, atan, atanh, abs, sqrt, cbrt, exp, floor, ceil, log, log10)**.
 
-**The tag v1.2 should work in a stable state. But it is old and doesn't support all supported features in the program**
 
 - The user types the input to be calculated
 - The program reads the input as a string and prints the result
