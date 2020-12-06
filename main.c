@@ -39,8 +39,8 @@ int main() {
             print_func(my_input);
 
             /*if the user inserted 'q' or 'quit', the program should close*/
-            if (!strncmp( * (my_input + count), "q", 1) ||
-                !strncmp( * (my_input + count), "quit", 4)) {
+            if ((!strncmp( * (my_input + count), "q", 1) && strlen(my_input[0])==2) ||
+                (!strncmp( * (my_input + count), "quit", 4)  && strlen(my_input[0])==5)) {
                 printf("quit the program\n");
                 close_program = true;
                 break;
