@@ -69,7 +69,7 @@ In the same manner one can use other arithmetich operations such as cos, cosh, e
 > (((10/5) * (9%7))/2) * 3 - (5 - (2 * 3))  
 7  
 > 10 + ( 10 + 5  
-please check your input, you may forgot a parenthesis  
+please check your input, you may forget a parenthesis  
 > 10 10  
 invalid input, missing an arithmetic sign  
 ```

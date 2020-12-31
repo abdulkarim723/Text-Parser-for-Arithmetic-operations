@@ -6,6 +6,12 @@
  */
 
 #include "calculator.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <math.h>
 
 /*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
 const char researved_words[reserved_strings][10] = {
@@ -327,7 +333,7 @@ int check_parentheses(char * str_o, int len) {
         str = start_add;
     }
     if (number_of_parentheses[0] != number_of_parentheses[1]) {
-        printf("please check your input, you may forgot a parentheses\n");
+        printf("please check your input, you may forget a parentheses\n");
         return parentheses_error;
     }
     return number_of_parentheses[0];
