@@ -5,13 +5,9 @@ The user adds an arithmetic expression which is calculated by the program
 *******************************************************************************/
 
 #include "calculator.h"
-
 #include <stdio.h>
-
 #include <stdbool.h>
-
 #include <stdlib.h>
-
 #include <string.h>
 
 int main() {

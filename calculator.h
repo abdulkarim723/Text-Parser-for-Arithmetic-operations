@@ -52,7 +52,7 @@ char * find_last_word(char * str);
 
 int calculate_numlen_sign(char * str_num);
 
-bool quit_program(const char* str);
+bool quit_program(const char * str);
 
 enum calc_status {
     addition,
@@ -70,7 +70,8 @@ enum error_enum {
 	negative_num,
 	empty_string,
 	out_of_range,
-	close_program
+	close_program,
+	clean_screen
 };
 
 enum math_expressions {

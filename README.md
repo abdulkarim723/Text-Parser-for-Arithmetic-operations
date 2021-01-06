@@ -82,4 +82,9 @@ quit the program
 ```
 > quit  
 quit the program
+```  
+**clean the terminal**  
 ```
+> clean
+```
+as a result, the terminal is cleaned
