@@ -1,4 +1,4 @@
-# String Calculator
+# Text Parser for Arithmetic Operations
 
 This is a string parser which accepts strings in an arithmetic form and calculates the result. If the input has an invalid input, the parser should detect the invalid input and return an error describing the error.
 
