@@ -10,7 +10,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdbool.h>
 #include <math.h>
 
 /*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
@@ -44,8 +43,21 @@ void print_func(char ** terminal_input) {
     fgets(terminal_input[0], STRING_SIZE, stdin);
 }
 
+bool quit_program(const char* str){
+	if ((!strncmp( str, "q", 1) && strlen(str)==2) ||
+		(!strncmp( str, "quit", 4)  && strlen(str)==5)) {
+		printf("quit the program\n");
+		return true;
+	}
+	return false;
+}
+
 /*parse the string given from the user as an input*/
 int string_parse(const char * str_o, char * result_str, double * result) {
+	if (quit_program(str_o)) {
+		return close_program;
+	}
+
     if (strlen(str_o) == 1) {
         return empty_string;
     }

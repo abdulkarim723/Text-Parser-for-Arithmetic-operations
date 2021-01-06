@@ -8,6 +8,7 @@
 #ifndef CALCULATOR_H_
 #define CALCULATOR_H_
 
+#include <stdbool.h>
 
 /* maximum string size */
 #define STRING_SIZE 1024
@@ -51,13 +52,15 @@ char * find_last_word(char * str);
 
 int calculate_numlen_sign(char * str_num);
 
+bool quit_program(const char* str);
+
 enum calc_status {
     addition,
     substraction
 };
 
 enum error_enum {
-    parentheses_error = -10,
+    parentheses_error = -15,
 	invalid_input_character,
 	no_arithmetic_sign,
 	extra_arithmetic_sign,
@@ -66,7 +69,8 @@ enum error_enum {
 	empty_parentheses_content,
 	negative_num,
 	empty_string,
-	out_of_range
+	out_of_range,
+	close_program
 };
 
 enum math_expressions {
