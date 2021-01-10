@@ -15,10 +15,20 @@ One can pass to this function a pointer of the type (char *) or (double *) and t
 
 void text_parser_with_terminal();
 void demo_example();
+int printandread(char * terminal_input);
 
 int main() {
 	demo_example();
 	//text_parser_with_terminal();
+}
+
+
+/*read the string as an input from the terminal*/
+int printandread(char * terminal_input) {
+    strcpy(terminal_input, "");
+    printf("> ");
+    fgets(terminal_input, STRING_SIZE, stdin);
+    return quit_program(terminal_input);
 }
 
 // this example uses the text parser which is based on the function string_parse() for infinity

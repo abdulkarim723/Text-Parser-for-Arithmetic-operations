@@ -27,8 +27,6 @@ int check_parentheses(char * str, int len);
 int string_parse(const char * str_o, char * result_str, double * result);
 /*this function checks signs correctness of the string*/
 int check_sign(char * str, int len);
-/*read the string as an input from the terminal*/
-int printandread(char * terminal_input);
 
 /*this function makes check if there are no sign between two numbers*/
 int check_errors(char * str, int len);

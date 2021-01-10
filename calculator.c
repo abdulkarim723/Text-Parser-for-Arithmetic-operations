@@ -36,13 +36,6 @@ const char researved_words[reserved_strings][10] = {
     "ceil"
 };
 
-/*read the string as an input from the terminal*/
-int printandread(char * terminal_input) {
-    strcpy(terminal_input, "");
-    printf("> ");
-    fgets(terminal_input, STRING_SIZE, stdin);
-    return quit_program(terminal_input);
-}
 
 int quit_program(const char * str) {
     if ((!strncmp(str, "q", 1) && strlen(str) == 2) ||
