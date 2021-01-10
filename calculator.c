@@ -5,12 +5,14 @@
  *      Author: A. Saddik
  */
 
-#include "calculator.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdbool.h>
+#include "defs.h"
+#include <string.h>
+#include "calculator.h"
 
 /*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
 const char researved_words[reserved_strings][10] = {
@@ -36,39 +38,36 @@ const char researved_words[reserved_strings][10] = {
     "ceil"
 };
 
-
-int quit_program(const char * str) {
-    if ((!strncmp(str, "q", 1) && strlen(str) == 2) ||
-        (!strncmp(str, "quit", 4) && strlen(str) == 5)) {
-        printf("quit the program\n");
-        return false;
-    }
-    return true;
-}
-
 /*parse the string given from the user as an input*/
+// This function enables the user from getting the result in two formats, string of chars or double
+// if one need the result only in one format, can one simply pass NULL for the non used format
+// example:
+// the result now is only in double format
+// string_parse("10 + 10 * ( 3 + 2)", NULL, &var);
+// the result now is only as a string of chars
+// string_parse("10 + 10 * ( 3 + 2)", str, NULL);
 int string_parse(const char * str_o, char * result_string, double * result) {
 
 	char result_str[Res_STR_SIZE];
 	double Res;
-    if ((!strncmp(str_o, "clean", 5) && strlen(str_o) == 6)) {
-        printf("\033[2J"); // Clear screen
-        return clean_screen;
-    }
 
     if (strlen(str_o) == 1) {
         return empty_string;
     }
     char ** str = (char ** ) malloc(sizeof(char * ));
     if (!str) {
+#ifdef PRINT_OUT
         printf("memory allocation failed\n"
             "exit the program\n");
+#endif
         return memory_allocation_failed;
     }
     str[0] = (char * ) malloc(sizeof(char) * STRING_SIZE);
     if (! * (str)) {
+#ifdef PRINT_OUT
         printf("memory allocation failed\n"
             "exit the program\n");
+#endif
         return memory_allocation_failed;
     }
     strncpy(str[0], str_o, STRING_SIZE);
@@ -96,8 +95,6 @@ int string_parse(const char * str_o, char * result_string, double * result) {
         calculate_parentthesis_content(str[0], strlen(str[0]), parenthesis_number);
     }
     check_sign(str[0], strlen(str[0]));
-//    * result = calculate(str[0], strlen(str[0]));
-//    sprintf(result_str, "%.15f", * result);
     Res = calculate(str[0], strlen(str[0]));
 	sprintf(result_str, "%.15f", Res);
 	if(result){
@@ -105,8 +102,7 @@ int string_parse(const char * str_o, char * result_string, double * result) {
 	}
 
     control_fraction(result_str, strlen(result_str));
-    /* print the result */
-    printf("%s\n", result_str);
+
     if(result_string){
 		strcpy(result_string, result_str);
 	}
@@ -151,7 +147,9 @@ double str_reconst(char * str, char * str_start, char * str_end) {
     str_start[str_end - str_start] = '\0';
     result = calculate(str_start + 1, str_end - str_start);
     if (str_end - str_start == 1) {
+#ifdef PRINT_OUT
         printf("it is not allowed to leave empty parentheses content\n");
+#endif
         return empty_parentheses_content;
     }
     sprintf(par_str, "%.15f", result);
@@ -354,7 +352,9 @@ int check_parentheses(char * str_o, int len) {
         str = start_add;
     }
     if (number_of_parentheses[0] != number_of_parentheses[1]) {
+#ifdef PRINT_OUT
         printf("please check your input, you may forget a parentheses\n");
+#endif
         return parentheses_error;
     }
     return number_of_parentheses[0];
@@ -412,7 +412,9 @@ int check_errors(char * str, int len) {
     char * strend = str + len;
     char digits[] = "0123456789";
     if (!strpbrk(str, digits)) {
+#ifdef PRINT_OUT
         printf("can not read any number, check your input please\n");
+#endif
         return no_numbers_found;
     }
     /*if the string starts with one of the following chars "*%/", return an error*/
@@ -425,7 +427,9 @@ int check_errors(char * str, int len) {
             }
         }
         if (!str_status) {
+#ifdef PRINT_OUT
             printf("extra_arithmetic_sign, input is invalid\n");
+#endif
             return extra_arithmetic_sign;
         }
     }
@@ -445,7 +449,9 @@ int check_errors(char * str, int len) {
                 tmp++;
             }
             if (!str_status) {
+#ifdef PRINT_OUT
                 printf("extra_arithmetic_sign, input is invalid\n");
+#endif
                 return extra_arithmetic_sign;
             }
         }
@@ -464,7 +470,9 @@ int check_errors(char * str, int len) {
 
         }
         if (!str_status) {
+#ifdef PRINT_OUT
             printf("extra_arithmetic_sign, input is invalid\n");
+#endif
             return extra_arithmetic_sign;
         }
     }
@@ -473,7 +481,9 @@ int check_errors(char * str, int len) {
         if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&
             *
             str != ' ' && * str != '.' && * str != '^') {
+#ifdef PRINT_OUT
             printf("invalid input\n");
+#endif
             return invalid_input_character;
         } else if (isdigit( * str)) {
             ret = calculate_numlen(str);
@@ -487,7 +497,9 @@ int check_errors(char * str, int len) {
                 }
                 /*return error for such input ' 10 10' or '(10) 10'*/
                 else if ((isdigit( * str)) || ( * str == '(')) {
+#ifdef PRINT_OUT
                     printf("invalid input, missing an arithmetic sign\n");
+#endif
                     return no_arithmetic_sign;
                 } else {
                     /*string index tuning*/
@@ -518,7 +530,6 @@ char * find_last_word(char * str) {
                 RetType = true;
                 break;
             }
-
         }
         str = par_start + 1;
     }
@@ -584,7 +595,9 @@ int check_reserved_words(char * str) {
             break;
         case SQRT:
             if (result < 0) {
+#ifdef PRINT_OUT
                 printf("only positive numbers are accepted for square root\n");
+#endif
                 return negative_num;
             }
             result = sqrt(result);
@@ -604,7 +617,9 @@ int check_reserved_words(char * str) {
             break;
         case ACOS:
             if (result < -1 || result > 1) {
+#ifdef PRINT_OUT
                 printf("out of range input for acos() function\n");
+#endif
                 return out_of_range;
             }
             result = acos(result);
@@ -612,7 +627,9 @@ int check_reserved_words(char * str) {
             break;
         case ACOSH:
             if (result < 1) {
+#ifdef PRINT_OUT
                 printf("out of range input for acosh() function\n");
+#endif
                 return out_of_range;
             }
             result = acosh(result);
@@ -628,7 +645,9 @@ int check_reserved_words(char * str) {
             break;
         case ASIN:
             if (result < -1 || result > 1) {
+#ifdef PRINT_OUT
                 printf("out of range input for asin() function\n");
+#endif
                 return out_of_range;
             }
             result = asin(result);
@@ -652,7 +671,9 @@ int check_reserved_words(char * str) {
             break;
         case ATANH:
             if (result < -1 || result > 1) {
+#ifdef PRINT_OUT
                 printf("out of range input for atanh() function\n");
+#endif
                 return out_of_range;
             }
             result = atanh(result);
@@ -664,7 +685,9 @@ int check_reserved_words(char * str) {
             break;
         case LOG:
             if (result <= 0) {
+#ifdef PRINT_OUT
                 printf("only positive numbers are accepted for logarithm\n");
+#endif
                 return negative_num;
             }
             result = log(result);
@@ -672,7 +695,9 @@ int check_reserved_words(char * str) {
             break;
         case LOG10:
             if (result <= 0) {
+#ifdef PRINT_OUT
                 printf("only positive numbers are accepted for logarithm\n");
+#endif
                 return negative_num;
             }
             result = log10(result);
