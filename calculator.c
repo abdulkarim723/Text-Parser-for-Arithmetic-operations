@@ -37,27 +37,27 @@ const char researved_words[reserved_strings][10] = {
 };
 
 /*read the string as an input from the terminal*/
-void print_func(char ** terminal_input) {
-    strcpy(terminal_input[0], "");
+int printandread(char * terminal_input) {
+    strcpy(terminal_input, "");
     printf("> ");
-    fgets(terminal_input[0], STRING_SIZE, stdin);
+    fgets(terminal_input, STRING_SIZE, stdin);
+    return quit_program(terminal_input);
 }
 
-bool quit_program(const char * str) {
+int quit_program(const char * str) {
     if ((!strncmp(str, "q", 1) && strlen(str) == 2) ||
         (!strncmp(str, "quit", 4) && strlen(str) == 5)) {
         printf("quit the program\n");
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 /*parse the string given from the user as an input*/
-int string_parse(const char * str_o, char * result_str, double * result) {
-    if (quit_program(str_o)) {
-        return close_program;
-    }
+int string_parse(const char * str_o, char * result_string, double * result) {
 
+	char result_str[Res_STR_SIZE];
+	double Res;
     if ((!strncmp(str_o, "clean", 5) && strlen(str_o) == 6)) {
         printf("\033[2J"); // Clear screen
         return clean_screen;
@@ -82,8 +82,10 @@ int string_parse(const char * str_o, char * result_str, double * result) {
     str[STRING_SIZE] = '\0';
     int ret;
     int len = strlen(str[0]) - 1;
-    /*remove the new line*/
-    memset(str[0] + len, '\0', 1);
+    /*remove the new line in case of terminal use*/
+    if(str[0][len] == '\n'){
+    	memset(str[0] + len, '\0', 1);
+    }
     ret = check_reserved_words(str[0]);
     if (ret < 0) {
         return ret;
@@ -101,11 +103,20 @@ int string_parse(const char * str_o, char * result_str, double * result) {
         calculate_parentthesis_content(str[0], strlen(str[0]), parenthesis_number);
     }
     check_sign(str[0], strlen(str[0]));
-    * result = calculate(str[0], strlen(str[0]));
-    sprintf(result_str, "%.15f", * result);
+//    * result = calculate(str[0], strlen(str[0]));
+//    sprintf(result_str, "%.15f", * result);
+    Res = calculate(str[0], strlen(str[0]));
+	sprintf(result_str, "%.15f", Res);
+	if(result){
+		*result = Res;
+	}
+
     control_fraction(result_str, strlen(result_str));
-    /* print the input with its result */
+    /* print the result */
     printf("%s\n", result_str);
+    if(result_string){
+		strcpy(result_string, result_str);
+	}
     free(str);
     return EXIT_SUCCESS;
 }
@@ -169,7 +180,7 @@ double calculate(char * str, int len) {
     int num_len = 0;
     /*result: is the last result of the calculation operations*/
     double result = 0;
-    char tmp[50];
+    char tmp[Res_STR_SIZE];
     int ret = 0;
     enum calc_status calc_stat;
     /*as the string str was reconstructed in the function calculate_dev_mul(), we need to update the value of len*/
@@ -501,23 +512,17 @@ int check_errors(char * str, int len) {
 
 char * find_last_word(char * str) {
     int cnt = 0;
-    int Num_Cnt = 0;
     bool RetType = false;
-    char * par_start = NULL, * tmp, * ret_ptr;
-    int count = 0;
+    char * par_start, * tmp, * ret_ptr;
     while ((par_start = strchr(str, '(')) != NULL) {
-        count = 0;
         tmp = par_start - 1;
         while (isalpha( * tmp)) {
             tmp--;
-            count++;
-
         }
         for (cnt = 0; cnt < reserved_strings; cnt++) {
             if (!strncmp(tmp + 1, researved_words[cnt], strlen(researved_words[cnt]))) {
                 ret_ptr = tmp + 1;
                 RetType = true;
-                Num_Cnt++;
                 break;
             }
 
@@ -527,13 +532,13 @@ char * find_last_word(char * str) {
 
     if (RetType == true) {
         return ret_ptr;
-    } else
-        return NULL;
+    }
+	return NULL;
 
 }
 /*this function is to calculate the content of the reserved key words such as 'abs' and 'sqrt'*/
 int check_reserved_words(char * str) {
-    char str_par[STRING_SIZE];
+    char str_par[50];
     char str_left[STRING_SIZE], str_right[STRING_SIZE];
     char * ptr, * parenthesis_start, * parenthesis_end, * tmp, * ret_ptr;
     int parenthesis_left = 1, parenthesis_right = 0;

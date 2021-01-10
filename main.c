@@ -2,6 +2,9 @@
 Author: A. Saddik
 string calculator (Terminal Calculator
 The user adds an arithmetic expression which is calculated by the program
+
+The core of this program is based on the function string_parse(). This function parses text input and outputs the result to the terminal.
+One can pass to this function a pointer of the type (char *) or (double *) and these pointers will hold the result value.
 *******************************************************************************/
 
 #include "calculator.h"
@@ -10,36 +13,29 @@ The user adds an arithmetic expression which is calculated by the program
 #include <stdlib.h>
 #include <string.h>
 
+void text_parser_with_terminal();
+void demo_example();
+
 int main() {
-    double result;
-    bool close_program = false;
-    char ** res_str = (char ** ) malloc(sizeof(char * ));
-    * res_str = (char * ) malloc(sizeof(char) * 30);
-    char ** my_input = (char ** ) malloc(sizeof(char * ));
-    /*check the success of memory allocation*/
-    if (!my_input || !res_str) {
-        printf("memory allocation failed\n"
-            "exit the program\n");
-        return memory_allocation_failed;
-    }
-
-    * my_input = (char * ) malloc(sizeof(char) * STRING_SIZE);
-    if (! * my_input) {
-        printf("memory allocation failed\n"
-            "exit the program\n");
-        return memory_allocation_failed;
-    }
-
-    while (1) {
-        print_func(my_input);
-        close_program = quit_program(my_input[0]);
-        if (close_program) {
-            break;
-        }
-        /*parse the input and output the result*/
-        string_parse(my_input[0], res_str[0], & result);
-    }
-    free(res_str);
-    free(my_input);
-    return EXIT_SUCCESS;
+	demo_example();
+	//text_parser_with_terminal();
 }
+
+// this example uses the text parser which is based on the function string_parse() for infinity
+void text_parser_with_terminal(){
+	char my_input[STRING_SIZE];
+	while (1) {
+		if(!printandread(my_input)){
+			break;
+		}
+		/*parse the input and output the result*/
+		string_parse(my_input, NULL, NULL);
+	}
+}
+
+//
+void demo_example(){
+	// this should pint 60 to stdout
+	string_parse("10 + 10 * ( 3 + 2)", NULL, NULL);
+}
+
