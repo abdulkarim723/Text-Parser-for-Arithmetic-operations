@@ -5,7 +5,6 @@
  *      Author: abdulkarim
  */
 
-#include "defs.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>

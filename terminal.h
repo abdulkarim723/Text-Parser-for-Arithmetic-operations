@@ -8,7 +8,6 @@
 #ifndef TERMINAL_H_
 #define TERMINAL_H_
 
-#include "defs.h"
 
 void text_parser_with_terminal();
 int printandread(char * terminal_input);

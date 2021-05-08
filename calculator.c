@@ -10,12 +10,11 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
-#include "defs.h"
 #include <string.h>
 #include "calculator.h"
 
 /*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
-const char researved_words[reserved_strings][10] = {
+char researved_words[reserved_strings][10] = {
     "abs(",
     "sqrt(",
     "exp(",

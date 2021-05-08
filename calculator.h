@@ -8,6 +8,12 @@
 #ifndef CALCULATOR_H_
 #define CALCULATOR_H_
 
+#define reserved_strings 20
+#define Res_STR_SIZE  50
+#define STRING_SIZE  1024
+
+// comment this line to stop terminal messages
+#define PRINT_OUT
 
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
