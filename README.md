@@ -2,21 +2,35 @@
 
 This is a string parser which accepts strings in an arithmetic form and calculates the result. If the input has an invalid input, the parser should detect the invalid input and return an error describing the error.
 
-Supported arithmetic operations by the parser till the monment of writing this docu are **(addition, substraction, multiplication, divison, reminder of division, power of a value, sin, sinh, asin, asinh, cos, cosh, acos, acosh, tan, tanh, atan, atanh, abs, sqrt, cbrt, exp, floor, ceil, log, log10)**.
-
-
-- The user types the input to be calculated
-- The program reads the input as a string and prints the result
-- The program should throw an error for many unaccepted input cases
+Supported arithmetic operations by the parser are **(addition, substraction, multiplication, divison, reminder of division, power of a value, sin, sinh, asin, asinh, cos, cosh, acos, acosh, tan, tanh, atan, atanh, abs, sqrt, cbrt, exp, floor, ceil, log, log10)**.
 
 ## Workflow (Linux)
 - Clone the repository:  
-git clone [git@github.com:Abdsaddik/String_Calculator.git](git@github.com:Abdsaddik/String_Calculator.git)
+git clone [git@github.com:Abdsaddik/Text-Parser-for-Arithmetic-operations.git](git@github.com:Abdsaddik/Text-Parser-for-Arithmetic-operations.git)
 - Change to the directory ../String_Calculator
 - make
 - ./Calculator
 ## How to use this calculator
-After one run the program, one can simply type the mathematic that he wants to be calculated and then print 'ENTER'.
+### One time run
+Simply, run ```./run.sh``` in the terminal. The following output should be printed on the terminal
+```
+build the program ...
+successfuly build
+run the program
+ 10 + 10 * ( 3 + 2) = 60 (string format)
+ 10 + 10 * ( 3 + 2) = 60.00 (double format)
+ 10 + 10 * ( 3 + 2) = 101.893996663600561 (string format)
+ 10 + 10 * ( 3 + 2) = 101.893996663600561 (double format)
+build files removed successfully!
+```
+### Terminal mode
+In main.c do the following:  
+- uncomment line 21 **text_parser_with_terminal();**
+- comment line 19 **demo_example();** 
+- ./run.sh
+- The user types the input to be calculated and then print 'ENTER'
+- The program reads the input and prints the result
+- The program should throw an error for many unaccepted input cases
 ## Output Examples in Terminal
 **Addition**  
 ```
@@ -57,11 +71,11 @@ Calculate the sine or hyperbolic tangent of a value in radian
 ```
 **Nested Functions are supported**
 ```
-sin(sin(sin(90)))  
+> sin(sin(sin(90)))  
 0.702981543566823
 ```
 **Note**  
-In the same manner one can use other arithmetich operations such as cos, cosh, etc  
+In the same manner one can use other arithmetic operations such as cos, cosh, etc  
 
 ```
 > abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) * abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) - ( 9 - 60 ) + cos(0) + sin(90)  

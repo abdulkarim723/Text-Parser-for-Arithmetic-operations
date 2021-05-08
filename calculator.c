@@ -13,8 +13,7 @@
 #include <string.h>
 #include "calculator.h"
 
-/*DO NOT CHANGE THE SEQUENCE OF THIS STRING ARRAY. IT IS DANGEROUS.*/
-char researved_words[reserved_strings][10] = {
+const char* researved_words[reserved_strings] = {
     "abs(",
     "sqrt(",
     "exp(",
@@ -53,7 +52,7 @@ int string_parse(const char * str_o, char * result_string, double * result) {
     if (strlen(str_o) == 1) {
         return empty_string;
     }
-    char ** str = (char ** ) malloc(sizeof(char * ));
+    char * str = (char * ) malloc(STRING_SIZE);
     if (!str) {
 #ifdef PRINT_OUT
         printf("memory allocation failed\n"
@@ -61,40 +60,32 @@ int string_parse(const char * str_o, char * result_string, double * result) {
 #endif
         return memory_allocation_failed;
     }
-    str[0] = (char * ) malloc(sizeof(char) * STRING_SIZE);
-    if (! * (str)) {
-#ifdef PRINT_OUT
-        printf("memory allocation failed\n"
-            "exit the program\n");
-#endif
-        return memory_allocation_failed;
-    }
-    strncpy(str[0], str_o, STRING_SIZE);
+    strncpy(str, str_o, STRING_SIZE);
     str[STRING_SIZE] = '\0';
     int ret;
-    int len = strlen(str[0]) - 1;
+    int len = strlen(str) - 1;
     /*remove the new line in case of terminal use*/
-    if(str[0][len] == '\n'){
-    	memset(str[0] + len, '\0', 1);
+    if(str[len] == '\n'){
+    	memset(str + len, '\0', 1);
     }
-    ret = check_reserved_words(str[0]);
+    ret = check_reserved_words(str);
     if (ret < 0) {
         return ret;
     }
-    ret = check_errors(str[0], strlen(str[0]));
+    ret = check_errors(str, strlen(str));
     if (ret < 0) {
         return ret;
     }
-    int parenthesis_number = check_parentheses(str[0], strlen(str[0]));
+    int parenthesis_number = check_parentheses(str, strlen(str));
     if (parenthesis_number == parentheses_error) {
         return parenthesis_number;
     }
 
     if (parenthesis_number > 0) {
-        calculate_parentthesis_content(str[0], strlen(str[0]), parenthesis_number);
+        calculate_parentthesis_content(str, strlen(str), parenthesis_number);
     }
-    check_sign(str[0], strlen(str[0]));
-    Res = calculate(str[0], strlen(str[0]));
+    check_sign(str, strlen(str));
+    Res = calculate(str, strlen(str));
 	sprintf(result_str, "%.15f", Res);
 	if(result){
 		*result = Res;
@@ -109,11 +100,8 @@ int string_parse(const char * str_o, char * result_string, double * result) {
     return EXIT_SUCCESS;
 }
 
-double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num) {
-    char str[1024];
+double calculate_parentthesis_content(char * str, int len, int parenthesis_num) {
     double result;
-    strncpy(str, str_o, len);
-    str[len] = '\0';
     char * strstart, * strend, * tmpstr;
     int cnt;
     tmpstr = str;
@@ -130,15 +118,21 @@ double calculate_parentthesis_content(char * str_o, int len, int parenthesis_num
         tmpstr = str;
     }
     check_sign(str, strlen(str));
-    strcpy(str_o, str);
     return result;
 }
 /*reconstruct the current string to its new value*/
 double str_reconst(char * str, char * str_start, char * str_end) {
     double result = 0;
-    char par_str[STRING_SIZE];
-    char str_left_side[STRING_SIZE];
-    char str_right_side[STRING_SIZE];
+    char* par_str = (char*) malloc(STRING_SIZE);
+    char* str_left_side = (char*) malloc(STRING_SIZE);
+    char* str_right_side = (char*) malloc(STRING_SIZE);
+    if (!par_str || !str_left_side || !str_right_side) {
+#ifdef PRINT_OUT
+		printf("memory allocation failed\n"
+			"exit the program\n");
+#endif
+		return memory_allocation_failed;
+	}
     strncpy(str_left_side, str, str_start - str);
     str_left_side[str_start - str] = '\0';
     strncpy(str_right_side, str_end + 1, strlen(str_end + 1));
@@ -156,6 +150,9 @@ double str_reconst(char * str, char * str_start, char * str_end) {
     strcpy(str, str_left_side);
     strncat(str, par_str, strlen(par_str));
     strncat(str, str_right_side, strlen(str_right_side));
+    free(par_str);
+    free(str_right_side);
+    free(str_left_side);
     return result;
 }
 

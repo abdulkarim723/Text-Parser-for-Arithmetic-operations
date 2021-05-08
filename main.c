@@ -16,9 +16,9 @@ One can pass to this function a pointer of the type (char *) or (double *) and t
 void demo_example();
 
 int main() {
-	// demo_example();
+	demo_example();
 	// uncomment to use the terminal case
-	text_parser_with_terminal();
+	// text_parser_with_terminal();
 }
 
 
@@ -27,11 +27,16 @@ void demo_example(){
 	char str[50];
 	double var;
 	// you can change the input your self and test the result
-	const char input[] = "10 + 10 * ( 3 + 2)";
+	const char* input = "10 + 10 * ( 3 + 2)";
+	const char* input1 = "abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) * "
+			"abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) - ( 9 - 60 ) + cos(0) + sin(90)";
 	// This function enables the user from getting the result in two formats, string of chars or double
 	// if one need the result only in one format, can one simply pass NULL for the non used format
 	string_parse(input, str, &var);
 	printf(" %s = %s (string format)\n", input,  str);
-	printf(" %s = %f (double format)\n", input, var);
+	printf(" %s = %.2f (double format)\n", input, var);
+	string_parse(input1, str, &var);
+	printf(" %s = %s (string format)\n", input,  str);
+	printf(" %s = %.15f (double format)\n", input, var);
 }
 

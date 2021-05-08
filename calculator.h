@@ -12,7 +12,7 @@
 #define Res_STR_SIZE  50
 #define STRING_SIZE  1024
 
-// comment this line to stop terminal messages
+// uncomment this line to show terminal messages
 #define PRINT_OUT
 
 /*calculate the substring length for every single number in the main string*/
