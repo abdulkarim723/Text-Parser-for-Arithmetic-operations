@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
-#include <stdbool.h>
 #include <string.h>
 #include "calculator.h"
 
@@ -35,6 +34,35 @@ const char* researved_words[reserved_strings] = {
     "cbrt(",
     "ceil"
 };
+
+// check if the string ends with an extra sign which has no meaning
+int chkSignEnd(const char* str){
+	const char * strend = str + strlen(str);
+	const char* str_ptr = str;
+	/*if the string ends with an arithmetic sign, then it returns error */
+	bool str_status = false;
+	char signs[] = "+*/-%";
+	int len = sizeof(signs)-1;
+	while(len-->0){
+	if((str_ptr = strrchr(str, signs[len])) != NULL){
+		str_status = false;
+		while (str_ptr < strend) {
+			str_ptr++;
+			if (isdigit( * str_ptr)) {
+				str_status = true;
+				break;
+			}
+
+		}
+		if (!str_status) {
+	#ifdef PRINT_OUT
+			printf("extra_arithmetic_sign, input is invalid\n");
+	#endif
+			return extra_arithmetic_sign;
+		}
+	}}
+	return EXIT_SUCCESS;
+}
 
 /*parse the string given from the user as an input*/
 // This function enables the user from getting the result in two formats, string of chars or double
@@ -62,12 +90,15 @@ int string_parse(const char * str_o, char * result_string, double * result) {
     }
     strncpy(str, str_o, STRING_SIZE);
     str[STRING_SIZE] = '\0';
-    int ret;
     int len = strlen(str) - 1;
     /*remove the new line in case of terminal use*/
     if(str[len] == '\n'){
     	memset(str + len, '\0', 1);
     }
+    int ret = chkSignEnd(str_o);
+	if(ret < 0) {
+		return ret;
+	}
     ret = check_reserved_words(str);
     if (ret < 0) {
         return ret;
@@ -400,12 +431,10 @@ int is_arith_sign(char * str) {
 /*this function returns error for such input ' 10 10', '(10) (10)', '* 10 + 5' or '10 + 5 *'
  * it checks for invalid chars*/
 int check_errors(char * str, int len) {
-    //   int len = strlen(str);
-    int ret;
+	int ret;
     char * str_ptr, * str_ptr_second, * tmp;
     char * strstart = str;
     bool str_status = false;
-    char * strend = str + len;
     char digits[] = "0123456789";
     if (!strpbrk(str, digits)) {
 #ifdef PRINT_OUT
@@ -435,7 +464,7 @@ int check_errors(char * str, int len) {
     tmp = str;
     while ((str_ptr = strpbrk(tmp, "*/%+")) != NULL) {
         tmp = str_ptr + 1;
-        if ((str_ptr_second = strpbrk(tmp, "*/%")) != NULL) {
+        if ((str_ptr_second = strpbrk(tmp, "*/%+")) != NULL) {
             while (str_ptr_second > tmp) {
                 if (isdigit( * tmp) || * tmp == '(') {
                     str_status = true;
@@ -452,26 +481,7 @@ int check_errors(char * str, int len) {
             }
         }
     }
-
-    /*if the string ends with an arithmetic sign, then it returns error */
-    str_status = false;
-    if (((str_ptr = strrchr(str, '*')) != NULL || (str_ptr = strrchr(str, '/')) != NULL || (str_ptr = strrchr(str, '%')) != NULL ||
-            (str_ptr = strrchr(str, '+')) != NULL || (str_ptr = strrchr(str, '-')) != NULL) && str_ptr < strend) {
-        while (str_ptr < strend) {
-            str_ptr++;
-            if (isdigit( * str_ptr)) {
-                str_status = true;
-                break;
-            }
-
-        }
-        if (!str_status) {
-#ifdef PRINT_OUT
-            printf("extra_arithmetic_sign, input is invalid\n");
-#endif
-            return extra_arithmetic_sign;
-        }
-    }
+    tmp = str;
 
     while (len > 0) {
         if (!isdigit( * str) && * str != '(' && * str != ')' && !is_arith_sign(str) &&

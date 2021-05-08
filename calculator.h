@@ -8,12 +8,14 @@
 #ifndef CALCULATOR_H_
 #define CALCULATOR_H_
 
+#include <stdbool.h>
+
 #define reserved_strings 20
 #define Res_STR_SIZE  50
 #define STRING_SIZE  1024
 
 // uncomment this line to show terminal messages
-#define PRINT_OUT
+// #define PRINT_OUT
 
 /*calculate the substring length for every single number in the main string*/
 int calculate_numlen(char * str_num);
@@ -41,6 +43,9 @@ int is_arith_sign(char * str);
 double calculate_dev_mul(char * str, int len);
 /*calculate the given input 'str'*/
 double calculate(char * str, int len);
+
+// check if the string ends with an extra sign which has no meaning
+int chkSignEnd(const char* str);
 
 int calculate_numlen_backward(char * str_num);
 

@@ -8,25 +8,23 @@ Supported arithmetic operations by the parser are **(addition, substraction, mul
 - Clone the repository:  
 git clone [git@github.com:Abdsaddik/Text-Parser-for-Arithmetic-operations.git](git@github.com:Abdsaddik/Text-Parser-for-Arithmetic-operations.git)
 - Change to the directory ../String_Calculator
-- make
-- ./Calculator
-## How to use this calculator
+- Then one can run the program as followed illustrated
 ### One time run
 Simply, run ```./run.sh``` in the terminal. The following output should be printed on the terminal
 ```
 build the program ...
 successfuly build
 run the program
- 10 + 10 * ( 3 + 2) = 60 (string format)
- 10 + 10 * ( 3 + 2) = 60.00 (double format)
- 10 + 10 * ( 3 + 2) = 101.893996663600561 (string format)
- 10 + 10 * ( 3 + 2) = 101.893996663600561 (double format)
+ 10 + 10 * ( 3 + 2 ) = 60 (string format)
+ 10 + 10 * ( 3 + 2 ) = 60.00 (double format)
+ abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) * abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) - ( 9 - 60 ) + cos(0) + sin(90) = 101.893996663600561 (string format)
+ abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) * abs(-((10/5 * 9%7)/2 *3 - (5 - 2 * 3))) - ( 9 - 60 ) + cos(0) + sin(90) = 101.893996663600561 (double format)
 build files removed successfully!
 ```
 ### Terminal mode
-In main.c do the following:  
-- uncomment line 21 **text_parser_with_terminal();**
-- comment line 19 **demo_example();** 
+- uncomment line 21 in main.c **text_parser_with_terminal();**
+- comment line 19 in main.c **demo_example();** 
+- uncomment line 18 in calculator.h **#define PRINT_OUT**
 - ./run.sh
 - The user types the input to be calculated and then print 'ENTER'
 - The program reads the input and prints the result
