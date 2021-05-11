@@ -35,6 +35,12 @@ const char* researved_words[reserved_strings] = {
     "ceil"
 };
 
+void strFree(char* str, int len){
+	memset(str, 0, len);
+	free(str);
+	str = NULL;
+}
+
 // check if the string ends with an extra sign which has no meaning
 int chkSignEnd(const char* str){
 	const char * strend = str + strlen(str);
@@ -80,7 +86,7 @@ int string_parse(const char * str_o, char * result_string, double * result) {
     if (strlen(str_o) == 1) {
         return empty_string;
     }
-    char * str = (char * ) malloc(STRING_SIZE);
+    char * str = (char * ) malloc(sizeof(char)*STRING_SIZE);
     if (!str) {
 #ifdef PRINT_OUT
         printf("memory allocation failed\n"
@@ -127,7 +133,7 @@ int string_parse(const char * str_o, char * result_string, double * result) {
     if(result_string){
 		strcpy(result_string, result_str);
 	}
-    free(str);
+    strFree(str, STRING_SIZE);
     return EXIT_SUCCESS;
 }
 
@@ -154,9 +160,9 @@ double calculate_parentthesis_content(char * str, int len, int parenthesis_num) 
 /*reconstruct the current string to its new value*/
 double str_reconst(char * str, char * str_start, char * str_end) {
     double result = 0;
-    char* par_str = (char*) malloc(STRING_SIZE);
-    char* str_left_side = (char*) malloc(STRING_SIZE);
-    char* str_right_side = (char*) malloc(STRING_SIZE);
+    char* par_str = (char*) malloc(sizeof(char)*STRING_SIZE);
+    char* str_left_side = (char*) malloc(sizeof(char)*STRING_SIZE);
+    char* str_right_side = (char*) malloc(sizeof(char)*STRING_SIZE);
     if (!par_str || !str_left_side || !str_right_side) {
 #ifdef PRINT_OUT
 		printf("memory allocation failed\n"
@@ -181,9 +187,9 @@ double str_reconst(char * str, char * str_start, char * str_end) {
     strcpy(str, str_left_side);
     strncat(str, par_str, strlen(par_str));
     strncat(str, str_right_side, strlen(str_right_side));
-    free(par_str);
-    free(str_right_side);
-    free(str_left_side);
+    strFree(par_str, STRING_SIZE);
+    strFree(str_right_side, STRING_SIZE);
+    strFree(str_left_side, STRING_SIZE);
     return result;
 }
 

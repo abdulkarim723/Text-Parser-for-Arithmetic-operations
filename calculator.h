@@ -61,6 +61,8 @@ char * find_last_word(char * str);
 
 int calculate_numlen_sign(char * str_num);
 
+void strFree(char* str, int len);
+
 
 enum calc_status {
     addition,
